@@ -18,6 +18,7 @@ class ScannerActivity : BaseScannerActivity() {
     }
 
     override fun onDocumentAccepted(bitmap: Bitmap) {
+        binding.previewImage.setImageBitmap(bitmap)
     }
 
     override fun onClose() {

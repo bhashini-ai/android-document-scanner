@@ -22,7 +22,7 @@ import java.io.File
 
 abstract class BaseScannerActivity : AppCompatActivity() {
     private lateinit var viewModel: ScannerViewModel
-    private lateinit var binding: ActivityScannerBinding
+    lateinit var binding: ActivityScannerBinding
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
