@@ -21,8 +21,8 @@ import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
 
 abstract class BaseScannerActivity : AppCompatActivity() {
-    private lateinit var viewModel: ScannerViewModel
-    lateinit var binding: ActivityScannerBinding
+    lateinit var viewModel: ScannerViewModel
+    internal lateinit var binding: ActivityScannerBinding
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
