@@ -17,7 +17,7 @@ import net.kuama.documentscanner.databinding.ActivityCropperBinding
 import net.kuama.documentscanner.extensions.loadBitmapFromView
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.extensions.toByteArray
-import net.kuama.documentscanner.viewmodels.CropperModel
+import net.kuama.documentscanner.viewmodels.CropperViewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -25,7 +25,7 @@ import java.util.*
 
 @SuppressLint("ClickableViewAccessibility")
 class CropperActivity : AppCompatActivity() {
-    private lateinit var cropModel: CropperModel
+    private lateinit var cropModel: CropperViewModel
     private lateinit var bitmapUri: Uri
     private var screenOrientationDeg: Int = 0
     private lateinit var binding: ActivityCropperBinding
@@ -42,7 +42,7 @@ class CropperActivity : AppCompatActivity() {
             screenOrientationDeg = if (intent.extras?.getInt("screenOrientationDeg") != null) intent.extras!!.getInt("screenOrientationDeg") else 0
         }
 
-        val cropModel: CropperModel by viewModels()
+        val cropModel: CropperViewModel by viewModels()
 
         // Picture taken from User
         cropModel.originalBitmap.observe(this) {

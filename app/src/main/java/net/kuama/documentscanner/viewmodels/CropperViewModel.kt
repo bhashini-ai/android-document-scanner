@@ -13,7 +13,7 @@ import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.domain.PerspectiveTransform
 import net.kuama.documentscanner.domain.UriToBitmap
 
-class CropperModel : ViewModel() {
+class CropperViewModel : ViewModel() {
     private val perspectiveTransform: PerspectiveTransform = PerspectiveTransform()
     private val findPaperSheetUseCase: FindPaperSheetContours = FindPaperSheetContours()
     private val uriToBitmap: UriToBitmap = UriToBitmap()
