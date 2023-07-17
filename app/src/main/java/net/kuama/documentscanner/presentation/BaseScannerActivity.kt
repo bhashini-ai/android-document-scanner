@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -33,8 +35,14 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 val image = File(bitmapUri)
                 val bmOptions = BitmapFactory.Options()
                 val bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
-                onDocumentAccepted(bitmap)
 
+                val uri = Uri.fromFile(File(bitmapUri))
+
+                //todo: improve
+                viewModel.urisList.value = viewModel.urisList.value?.plus(uri) ?: listOf(uri)
+                val urisList  = viewModel.urisList.value ?: listOf(uri)
+                onDocumentAccepted(bitmap, urisList)
+                Toast.makeText(this, "urisListSize = ${urisList.size}", Toast.LENGTH_LONG ).show()
                 image.delete()
             } else {
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
@@ -134,6 +142,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     abstract fun onError(throwable: Throwable)
-    abstract fun onDocumentAccepted(bitmap: Bitmap)
+    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList : List<Uri>? = null)
     abstract fun onClose()
 }

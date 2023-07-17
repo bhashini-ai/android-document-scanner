@@ -44,6 +44,7 @@ class ScannerViewModel : ViewModel() {
     val errors = MutableLiveData<Throwable>()
     val flashStatus = MutableLiveData<EFlashStatus>()
     var lastUri = MutableLiveData<Uri>()
+    var urisList = MutableLiveData<List<Uri>>(listOf())
     val screenOrientationDeg = MutableLiveData<Int>()
 
     private var didLoadOpenCv = false

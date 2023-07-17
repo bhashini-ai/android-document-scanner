@@ -1,6 +1,7 @@
 package net.kuama.documentscanner.presentation
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.exceptions.MissingSquareException
@@ -17,7 +18,7 @@ class ScannerActivity : BaseScannerActivity() {
         }
     }
 
-    override fun onDocumentAccepted(bitmap: Bitmap) {
+    override fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>?) {
         binding.previewImage.setImageBitmap(bitmap)
     }
 
