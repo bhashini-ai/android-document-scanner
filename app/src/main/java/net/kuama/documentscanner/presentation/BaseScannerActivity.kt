@@ -4,13 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +24,7 @@ import net.kuama.documentscanner.enums.EFlashStatus
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
+import java.io.FileOutputStream
 
 abstract class BaseScannerActivity : AppCompatActivity() {
     lateinit var viewModel: ScannerViewModel
@@ -42,8 +46,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 viewModel.urisList.value = viewModel.urisList.value?.plus(uri) ?: listOf(uri)
                 val urisList  = viewModel.urisList.value ?: listOf(uri)
                 onDocumentAccepted(bitmap, urisList)
-                Toast.makeText(this, "urisListSize = ${urisList.size}", Toast.LENGTH_LONG ).show()
-                image.delete()
+                //todo: delete the image files when they're not needed anymore
             } else {
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
@@ -130,11 +133,47 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     private fun onDoneClicked() {
-        // todo: convert the images to 1 PDF document
-        // todo: pass the PDF document
+        viewModel.urisList.observe(this) { list ->
+            val bitmapsList = mutableListOf<Bitmap>()
+            list.forEach { uri ->
+                bitmapsList.add(getBitmapFromImageUri(uri))
+            }
+            convertBitmapsToPdf(bitmapsList)
+        }
 
+        // todo: pass the PDF document
         setResult(RESULT_OK)
         finish()
+    }
+
+    // todo: getBitmap is deprecated, check what to use
+    private fun getBitmapFromImageUri(uri: Uri): Bitmap =  MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+
+    fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
+        // Works for the emulator
+        val outputPath =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
+        // todo:Check why this is not working out for the physical device
+        //   val outputPath = applicationContext.cacheDir.absolutePath + "/output.pdf"
+
+        val document = PdfDocument()
+        for ((index, bitmap) in bitmaps.withIndex()) {
+            // for normal ordering of the pages, otherwise the pages are reversed
+            val pageNumber = bitmaps.size - index
+            val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, pageNumber).create()
+            val page = document.startPage(pageInfo)
+            val canvas: Canvas = page.canvas
+
+            canvas.drawBitmap(bitmap, 0f, 0f, null)
+            document.finishPage(page)
+        }
+        // todo: check if document exists
+        //todo: try/catch
+        val fileOutputStream = FileOutputStream(outputPath)
+        document.writeTo(fileOutputStream)
+
+        document.close()
+        fileOutputStream.close()
     }
 
     private val orientationEventListener by lazy {
@@ -156,5 +195,4 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     abstract fun onError(throwable: Throwable)
     abstract fun onDocumentAccepted(bitmap: Bitmap, urisList : List<Uri>? = null)
     abstract fun onClose()
-//    abstract fun onDone()
 }
