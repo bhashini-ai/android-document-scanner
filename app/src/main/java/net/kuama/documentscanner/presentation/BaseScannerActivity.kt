@@ -105,6 +105,10 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             viewModel.onTakePicture(this.outputDirectory(), this)
         }
 
+        binding.done.setOnClickListener {
+           onDoneClicked()
+        }
+
         binding.closeScanner.setOnClickListener {
             closePreview()
         }
@@ -122,6 +126,14 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         binding.rootView.visibility = View.GONE
         viewModel.onClosePreview()
         orientationEventListener.disable()
+        finish()
+    }
+
+    private fun onDoneClicked() {
+        // todo: convert the images to 1 PDF document
+        // todo: pass the PDF document
+
+        setResult(RESULT_OK)
         finish()
     }
 
@@ -144,4 +156,5 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     abstract fun onError(throwable: Throwable)
     abstract fun onDocumentAccepted(bitmap: Bitmap, urisList : List<Uri>? = null)
     abstract fun onClose()
+//    abstract fun onDone()
 }
