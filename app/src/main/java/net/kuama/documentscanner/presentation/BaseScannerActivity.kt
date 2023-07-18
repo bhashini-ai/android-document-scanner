@@ -1,12 +1,15 @@
 package net.kuama.documentscanner.presentation
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.ImageDecoder
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -146,7 +149,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val bitmapsList = mutableListOf<Bitmap>()
                 list.forEach { uri ->
-                    bitmapsList.add(getBitmapFromImageUri(uri))
+                    val bitmap =
+                        getBitmapFromImageUri(uri) ?: return@forEach
+                    bitmapsList.add(bitmap)
                 }
                 withContext(Dispatchers.IO) {
                     convertBitmapsToPdf(bitmapsList)
@@ -157,10 +162,25 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             }
         }
     }
-
-    // todo: getBitmap is deprecated, check what to use
-    private fun getBitmapFromImageUri(uri: Uri): Bitmap =
-        MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+    @Suppress("DEPRECATION")
+    private fun getBitmapFromImageUri(uri: Uri): Bitmap? {
+        return try {
+            val contentResolver: ContentResolver = this.contentResolver
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(contentResolver, uri)
+                ) { decoder, _, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    decoder.isMutableRequired = true
+                }
+            } else {
+                MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
         // Works for the emulator
