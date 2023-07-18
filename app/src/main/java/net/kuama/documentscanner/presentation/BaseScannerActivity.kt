@@ -27,6 +27,10 @@ import java.io.File
 import java.io.FileOutputStream
 
 abstract class BaseScannerActivity : AppCompatActivity() {
+    companion object {
+        private val TAG = ScannerActivity::class.java.simpleName
+    }
+
     lateinit var viewModel: ScannerViewModel
     internal lateinit var binding: ActivityScannerBinding
 
@@ -44,10 +48,11 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
                 //todo: improve
                 viewModel.urisList.value = viewModel.urisList.value?.plus(uri) ?: listOf(uri)
-                val urisList  = viewModel.urisList.value ?: listOf(uri)
+                val urisList = viewModel.urisList.value ?: listOf(uri)
                 onDocumentAccepted(bitmap, urisList)
                 //todo: delete the image files when they're not needed anymore
             } else {
+                Log.e(TAG, "resultLauncher: ${result.resultCode}", )
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
         }
@@ -109,7 +114,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
 
         binding.done.setOnClickListener {
-           onDoneClicked()
+            onDoneClicked()
         }
 
         binding.closeScanner.setOnClickListener {
@@ -147,9 +152,10 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     // todo: getBitmap is deprecated, check what to use
-    private fun getBitmapFromImageUri(uri: Uri): Bitmap =  MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+    private fun getBitmapFromImageUri(uri: Uri): Bitmap =
+        MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
 
-    fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
+    private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
         // Works for the emulator
         val outputPath =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
@@ -160,20 +166,31 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         for ((index, bitmap) in bitmaps.withIndex()) {
             // for normal ordering of the pages, otherwise the pages are reversed
             val pageNumber = bitmaps.size - index
-            val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, pageNumber).create()
+            val pageInfo =
+                PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, pageNumber).create()
             val page = document.startPage(pageInfo)
             val canvas: Canvas = page.canvas
 
             canvas.drawBitmap(bitmap, 0f, 0f, null)
             document.finishPage(page)
         }
-        // todo: check if document exists
-        //todo: try/catch
-        val fileOutputStream = FileOutputStream(outputPath)
-        document.writeTo(fileOutputStream)
-
-        document.close()
-        fileOutputStream.close()
+        // todo: delete the file when it's not needed anymore
+        val file = File(outputPath)
+        if (file.exists()) {
+            val isDeleted = file.delete()
+            if (!isDeleted) {
+                Log.e(TAG, "convertBitmapsToPdf: The file was not deleted")
+            }
+        }
+        try {
+            FileOutputStream(file).use { fileOutputStream ->
+                document.writeTo(fileOutputStream)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            document.close()
+        }
     }
 
     private val orientationEventListener by lazy {
@@ -193,6 +210,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     abstract fun onError(throwable: Throwable)
-    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList : List<Uri>? = null)
+    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
     abstract fun onClose()
 }
