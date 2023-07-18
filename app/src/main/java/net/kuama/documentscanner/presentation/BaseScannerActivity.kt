@@ -11,7 +11,6 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.OrientationEventListener
@@ -184,11 +183,11 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
         // Works for the emulator
-        val outputPath =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
+//        val outputPath =
+//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
+       val outputPath = this.outputDirectory().absolutePath + "/output.pdf"
         // todo:Check why this is not working out for the physical device
         //   val outputPath = applicationContext.cacheDir.absolutePath + "/output.pdf"
-
         val document = PdfDocument()
         for ((index, bitmap) in bitmaps.withIndex()) {
             // for normal ordering of the pages, otherwise the pages are reversed
