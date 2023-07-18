@@ -17,6 +17,10 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.databinding.ActivityScannerBinding
@@ -52,7 +56,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 onDocumentAccepted(bitmap, urisList)
                 //todo: delete the image files when they're not needed anymore
             } else {
-                Log.e(TAG, "resultLauncher: ${result.resultCode}", )
+                Log.e(TAG, "resultLauncher: ${result.resultCode}")
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
         }
@@ -139,16 +143,19 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     private fun onDoneClicked() {
         viewModel.urisList.observe(this) { list ->
-            val bitmapsList = mutableListOf<Bitmap>()
-            list.forEach { uri ->
-                bitmapsList.add(getBitmapFromImageUri(uri))
+            lifecycleScope.launch {
+                val bitmapsList = mutableListOf<Bitmap>()
+                list.forEach { uri ->
+                    bitmapsList.add(getBitmapFromImageUri(uri))
+                }
+                withContext(Dispatchers.IO) {
+                    convertBitmapsToPdf(bitmapsList)
+                }
+                // todo: pass the PDF document
+                setResult(RESULT_OK)
+                finish()
             }
-            convertBitmapsToPdf(bitmapsList)
         }
-
-        // todo: pass the PDF document
-        setResult(RESULT_OK)
-        finish()
     }
 
     // todo: getBitmap is deprecated, check what to use
