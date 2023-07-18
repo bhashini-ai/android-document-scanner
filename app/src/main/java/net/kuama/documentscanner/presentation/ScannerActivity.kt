@@ -6,7 +6,7 @@ import android.widget.Toast
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.exceptions.MissingSquareException
 
-class ScannerActivity : BaseScannerActivity() {
+open class ScannerActivity : BaseScannerActivity() {
     override fun onError(throwable: Throwable) {
         when (throwable) {
             is MissingSquareException -> Toast.makeText(
