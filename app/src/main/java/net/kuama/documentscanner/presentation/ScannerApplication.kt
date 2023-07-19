@@ -1,6 +1,7 @@
 package net.kuama.documentscanner.presentation
 
 import android.app.Application
+import net.kuama.documentscanner.BuildConfig.DEBUG
 import timber.log.Timber
 
 class ScannerApplication : Application() {
@@ -11,7 +12,8 @@ class ScannerApplication : Application() {
     }
 
     private fun plantTimberTree() {
-        // todo: add `if (DEBUG)`
-        Timber.plant(Timber.DebugTree())
+        if (DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }
