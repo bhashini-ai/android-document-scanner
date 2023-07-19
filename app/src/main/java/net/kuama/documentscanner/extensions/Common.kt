@@ -6,6 +6,6 @@ fun logDebug(message: String) {
     Timber.d(message)
 }
 
-fun logError(message: String) {
-    Timber.e(message)
+fun logError(tag: String, message: String?) {
+    Timber.tag(tag).e(message)
 }

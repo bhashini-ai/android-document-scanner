@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
@@ -27,6 +26,7 @@ import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.databinding.ActivityScannerBinding
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
@@ -52,13 +52,14 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
                 val uri = Uri.fromFile(File(bitmapUri))
 
-                //todo: improve
-                viewModel.urisList.value = viewModel.urisList.value?.plus(uri) ?: listOf(uri)
-                val urisList = viewModel.urisList.value ?: listOf(uri)
-                onDocumentAccepted(bitmap, urisList)
-                //todo: delete the image files when they're not needed anymore
+                viewModel.savePhoto(uri)
+                //todo: check if this can be improved
+                viewModel.takenPhotos.observe(this) { photos ->
+                    onDocumentAccepted(bitmap, photos)
+                    //todo: delete the original image file when it's not needed anymore
+                }
             } else {
-                Log.e(TAG, "resultLauncher: ${result.resultCode}")
+                logError(TAG, "resultLauncher: $result.resultCode")
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
         }
@@ -90,7 +91,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
         viewModel.errors.observe(this) {
             onError(it)
-            Log.e(ScannerActivity::class.java.simpleName, it.message, it)
+            logError(TAG, it.message)
         }
 
         viewModel.corners.observe(this) {
@@ -144,10 +145,10 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     private fun onDoneClicked() {
-        viewModel.urisList.observe(this) { list ->
+        viewModel.takenPhotos.observe(this) { photos ->
             lifecycleScope.launch {
                 val bitmapsList = mutableListOf<Bitmap>()
-                list.forEach { uri ->
+                photos.forEach { uri ->
                     val bitmap =
                         getBitmapFromImageUri(uri) ?: return@forEach
                     bitmapsList.add(bitmap)
@@ -205,7 +206,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         if (file.exists()) {
             val isDeleted = file.delete()
             if (!isDeleted) {
-                Log.e(TAG, "convertBitmapsToPdf: The file was not deleted")
+                logError(TAG, "convertBitmapsToPdf: The file was not deleted")
             }
         }
         try {

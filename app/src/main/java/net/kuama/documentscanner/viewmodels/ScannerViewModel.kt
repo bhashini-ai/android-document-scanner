@@ -19,12 +19,16 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.extensions.deleteIfLocal
 import net.kuama.documentscanner.extensions.logDebug
 import java.io.File
 import java.text.SimpleDateFormat
@@ -45,7 +49,8 @@ class ScannerViewModel : ViewModel() {
     val errors = MutableLiveData<Throwable>()
     val flashStatus = MutableLiveData<EFlashStatus>()
     var lastUri = MutableLiveData<Uri>()
-    var urisList = MutableLiveData<List<Uri>>(listOf())
+    private val _takenPhotos = MutableStateFlow<List<Uri>>(emptyList())
+    var takenPhotos = _takenPhotos.asLiveData()
     val screenOrientationDeg = MutableLiveData<Int>()
 
     private var didLoadOpenCv = false
@@ -192,5 +197,20 @@ class ScannerViewModel : ViewModel() {
 
     fun onScreenOrientationDegChange(orientationDeg: Int) {
         screenOrientationDeg.value = orientationDeg
+    }
+
+    fun savePhoto(uri: Uri) {
+        _takenPhotos.update {
+            it + uri
+        }
+    }
+
+    fun deletePhoto(index: Int) {
+        _takenPhotos.update { photos ->
+            photos.toMutableList().apply {
+                removeAt(index).also { removedPhoto -> removedPhoto.deleteIfLocal() }
+            }
+            photos
+        }
     }
 }
