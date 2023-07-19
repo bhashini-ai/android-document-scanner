@@ -25,6 +25,7 @@ import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.extensions.logDebug
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -114,7 +115,11 @@ class ScannerViewModel : ViewModel() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    //todo: check why it's using `lastUri.value = Uri.fromFile(photoFile)`
+                    // when `output.savedUri` returns the same path on debug
                     lastUri.value = Uri.fromFile(photoFile)
+                    logDebug("Photo capture succeeded :  output.savedUri is ${output.savedUri}")
+                    logDebug("Photo capture succeeded : lastUri.value is ${lastUri.value}")
                 }
             })
     }
