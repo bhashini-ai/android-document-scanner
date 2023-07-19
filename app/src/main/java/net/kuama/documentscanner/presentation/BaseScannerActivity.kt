@@ -38,7 +38,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     lateinit var viewModel: ScannerViewModel
-    internal lateinit var binding: ActivityScannerBinding
+    private lateinit var binding: ActivityScannerBinding
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -50,14 +50,15 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 val bmOptions = BitmapFactory.Options()
                 val bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
 
+                binding.previewImage.setImageBitmap(bitmap)
                 val uri = Uri.fromFile(File(bitmapUri))
-
                 viewModel.savePhoto(uri)
+
                 //todo: check if this can be improved
                 viewModel.takenPhotos.observe(this) { photos ->
-                    onDocumentAccepted(bitmap, photos)
-                    //todo: delete the original image file when it's not needed anymore
+                    //todo:update the ui
                 }
+                //todo: delete the original image file when it's not needed anymore
             } else {
                 logError(TAG, "resultLauncher: $result.resultCode")
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
@@ -237,6 +238,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     abstract fun onError(throwable: Throwable)
-    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
+//    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
     abstract fun onClose()
 }

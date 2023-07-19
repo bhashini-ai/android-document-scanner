@@ -1,7 +1,5 @@
 package net.kuama.documentscanner.presentation
 
-import android.graphics.Bitmap
-import android.net.Uri
 import android.widget.Toast
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.exceptions.MissingSquareException
@@ -16,10 +14,6 @@ open class ScannerActivity : BaseScannerActivity() {
                 .show()
             else -> Toast.makeText(this, throwable.message, Toast.LENGTH_LONG).show()
         }
-    }
-
-    override fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>?) {
-        binding.previewImage.setImageBitmap(bitmap)
     }
 
     override fun onClose() {
