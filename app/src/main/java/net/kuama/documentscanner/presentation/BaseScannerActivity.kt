@@ -154,6 +154,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                         getBitmapFromImageUri(uri) ?: return@forEach
                     bitmapsList.add(bitmap)
                 }
+                this@BaseScannerActivity.outputDirectory().deleteRecursively()
                 withContext(Dispatchers.IO) {
                     convertBitmapsToPdf(bitmapsList)
                 }
@@ -238,6 +239,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     abstract fun onError(throwable: Throwable)
-//    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
+
+    //    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
     abstract fun onClose()
 }
