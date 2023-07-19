@@ -104,20 +104,20 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
 
         viewModel.flashStatus.observe(this) { status ->
-            binding.flashToggle.setImageResource(
+            binding.flashMode.setImageResource(
                 when (status) {
-                    EFlashStatus.ON -> R.drawable.ic_flash_on
-                    EFlashStatus.OFF -> R.drawable.ic_flash_off
-                    else -> R.drawable.ic_flash_off
+                    EFlashStatus.ON -> R.drawable.flash_on
+                    EFlashStatus.OFF -> R.drawable.flash_off
+                    else -> R.drawable.flash_off
                 }
             )
         }
 
-        binding.flashToggle.setOnClickListener {
+        binding.flashMode.setOnClickListener {
             viewModel.onFlashToggle()
         }
 
-        binding.shutter.setOnClickListener {
+        binding.takePicture.setOnClickListener {
             viewModel.onTakePicture(this.outputDirectory(), this)
         }
 
