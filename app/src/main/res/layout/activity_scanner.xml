@@ -55,14 +55,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:id="@+id/previewImage"
+        <com.yuyakaido.android.cardstackview.CardStackView
+            android:id="@+id/previewStack"
             android:layout_width="90dp"
             android:layout_height="90dp"
             android:layout_gravity="start|center_vertical"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:clipToPadding="false"
+            android:padding="10dp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/takePicture"
@@ -71,8 +70,8 @@
             android:layout_gravity="center|center_vertical"
             android:layout_marginHorizontal="32dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/twotone_circle"
             android:contentDescription="@string/take_picture"
+            android:src="@drawable/twotone_circle"
             android:tint="@color/white" />
 
         <androidx.appcompat.widget.AppCompatImageView

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.ImageDecoder
 import android.graphics.pdf.PdfDocument
@@ -19,6 +18,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.StackFrom
+import com.yuyakaido.android.cardstackview.SwipeableMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,6 +41,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     lateinit var viewModel: ScannerViewModel
     private lateinit var binding: ActivityScannerBinding
+    private val takenPhotosAdapter = StackViewAdapter()
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -46,16 +49,15 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 val bitmapUri =
                     result.data?.extras?.getString("croppedPath") ?: error("invalid path")
 
-                val image = File(bitmapUri)
-                val bmOptions = BitmapFactory.Options()
-                val bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
-
-                binding.previewImage.setImageBitmap(bitmap)
                 val uri = Uri.fromFile(File(bitmapUri))
                 viewModel.savePhoto(uri)
 
                 //todo: check if this can be improved
                 viewModel.takenPhotos.observe(this) { photos ->
+                    setUpPreviewAdapter()
+                    //todo:check if photos should be reversed in the viewmodel
+                      takenPhotosAdapter.addImageUris(*photos.toTypedArray().reversedArray())
+
                     //todo:update the ui
                 }
                 //todo: delete the original image file when it's not needed anymore
@@ -187,9 +189,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
         // Works for the emulator
-//        val outputPath =
-//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
-        // todo: Use this path to save  the PDF document to, when using as a library
+        //        val outputPath =
+        //            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
+        // Use this path to save  the PDF document to, when using as a library
         val outputPath = applicationContext.cacheDir.absolutePath + "/output.pdf"
         val document = PdfDocument()
         for ((index, bitmap) in bitmaps.withIndex()) {
@@ -220,6 +222,16 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         } finally {
             document.close()
         }
+    }
+
+    private fun setUpPreviewAdapter() {
+        val layoutManager = CardStackLayoutManager(this).apply {
+            setStackFrom(StackFrom.TopAndRight)
+            setSwipeableMethod(SwipeableMethod.None)
+            setVisibleCount(3)
+        }
+        binding.previewStack.layoutManager = layoutManager
+        binding.previewStack.adapter = takenPhotosAdapter
     }
 
     private val orientationEventListener by lazy {
