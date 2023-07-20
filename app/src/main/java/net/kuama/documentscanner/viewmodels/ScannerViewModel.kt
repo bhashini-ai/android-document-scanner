@@ -201,7 +201,7 @@ class ScannerViewModel : ViewModel() {
 
     fun savePhoto(uri: Uri) {
         _takenPhotos.update {
-            it + uri
+            listOf(uri) + it
         }
     }
 

@@ -1,5 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -61,7 +62,8 @@
             android:layout_height="90dp"
             android:layout_gravity="start|center_vertical"
             android:clipToPadding="false"
-            android:padding="10dp" />
+            android:padding="10dp"
+            tools:listitem="@layout/list_item_taken_photo" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/takePicture"

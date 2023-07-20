@@ -55,8 +55,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 //todo: check if this can be improved
                 viewModel.takenPhotos.observe(this) { photos ->
                     setUpPreviewAdapter()
-                    //todo:check if photos should be reversed in the viewmodel
-                      takenPhotosAdapter.addImageUris(*photos.toTypedArray().reversedArray())
+                    takenPhotosAdapter.addImageUris(*photos.toTypedArray())
 
                     //todo:update the ui
                 }
@@ -156,6 +155,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                         getBitmapFromImageUri(uri) ?: return@forEach
                     bitmapsList.add(bitmap)
                 }
+                // for normal ordering of the pages, otherwise the pages are reversed
+                bitmapsList.reverse()
                 this@BaseScannerActivity.outputDirectory().deleteRecursively()
                 withContext(Dispatchers.IO) {
                     convertBitmapsToPdf(bitmapsList)
@@ -195,8 +196,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         val outputPath = applicationContext.cacheDir.absolutePath + "/output.pdf"
         val document = PdfDocument()
         for ((index, bitmap) in bitmaps.withIndex()) {
-            // for normal ordering of the pages, otherwise the pages are reversed
-            val pageNumber = bitmaps.size - index
+            val pageNumber = index + 1
             val pageInfo =
                 PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, pageNumber).create()
             val page = document.startPage(pageInfo)
