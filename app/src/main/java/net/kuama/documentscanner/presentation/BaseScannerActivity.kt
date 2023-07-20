@@ -1,7 +1,9 @@
 package net.kuama.documentscanner.presentation
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -12,12 +14,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.MotionEvent
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.StackFrom
@@ -54,7 +58,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
                 val uri = Uri.fromFile(File(bitmapUri))
                 viewModel.savePhoto(uri)
-                updateUiElements()
                 //todo: delete the original image file when it's not needed anymore
             } else {
                 logError(TAG, "resultLauncher: $result.resultCode")
@@ -125,6 +128,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         binding.closeScanner.setOnClickListener {
             closePreview()
         }
+        setUpPreviewAdapter()
+//        setOnPreviewStackClicked()
+
         this.viewModel = viewModel
         orientationEventListener.enable()
     }
@@ -133,8 +139,11 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         super.onResume()
         orientationEventListener.enable()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
-        setUpPreviewAdapter()
+        updateUiElements()
+//        setOnPreviewStackClicked()
+//        updateDialog()
     }
+
 
     private fun closePreview() {
         binding.rootView.visibility = View.GONE
@@ -229,6 +238,30 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
         binding.previewStack.layoutManager = layoutManager
         binding.previewStack.adapter = takenPhotosAdapter
+    }
+
+    private fun updateDialog() {
+        val dialogFragment =
+            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
+        if (dialogFragment?.dialog != null) {
+            dialogFragment.dismiss()
+            ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
+                viewModel.deletePhoto(removedItemIndex)
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOnPreviewStackClicked() {
+        binding.previewStack.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
+                    viewModel.deletePhoto(removedItemIndex)
+                }
+                return@setOnTouchListener true
+            }
+            return@setOnTouchListener true
+        }
     }
 
     private fun updateUiElements() {

@@ -1,12 +1,11 @@
 package net.kuama.documentscanner.presentation
 
-import android.widget.ImageView
-import com.squareup.picasso.Picasso
 import net.kuama.documentscanner.databinding.ListItemTakenPhotoBinding
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import net.kuama.documentscanner.extensions.loadImageUri
 
 class StackViewAdapter : RecyclerView.Adapter<StackViewAdapter.VH>() {
     private var _imageUris = mutableListOf<Uri>()
@@ -41,13 +40,5 @@ class StackViewAdapter : RecyclerView.Adapter<StackViewAdapter.VH>() {
             binding.image.loadImageUri(uri)
             binding.counter.text = _imageUris.size.toString()
         }
-    }
-
-    fun ImageView.loadImageUri(uri: Uri) {
-        Picasso.get()
-            .load(uri)
-            .fit()
-            .centerCrop()
-            .into(this)
     }
 }
