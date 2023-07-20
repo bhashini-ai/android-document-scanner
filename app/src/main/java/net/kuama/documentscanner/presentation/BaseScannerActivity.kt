@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
@@ -28,8 +29,10 @@ import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.databinding.ActivityScannerBinding
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
+import net.kuama.documentscanner.extensions.show
 import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -51,14 +54,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
                 val uri = Uri.fromFile(File(bitmapUri))
                 viewModel.savePhoto(uri)
-
-                //todo: check if this can be improved
-                viewModel.takenPhotos.observe(this) { photos ->
-                    setUpPreviewAdapter()
-                    takenPhotosAdapter.addImageUris(*photos.toTypedArray())
-
-                    //todo:update the ui
-                }
+                updateUiElements()
                 //todo: delete the original image file when it's not needed anymore
             } else {
                 logError(TAG, "resultLauncher: $result.resultCode")
@@ -137,6 +133,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         super.onResume()
         orientationEventListener.enable()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
+        setUpPreviewAdapter()
     }
 
     private fun closePreview() {
@@ -232,6 +229,30 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
         binding.previewStack.layoutManager = layoutManager
         binding.previewStack.adapter = takenPhotosAdapter
+    }
+
+    private fun updateUiElements() {
+        viewModel.takenPhotos.observe(this) { photos ->
+            takenPhotosAdapter.addImageUris(*photos.toTypedArray())
+            if (photos.isNullOrEmpty()) {
+                binding.apply {
+                    cameraElementsWrapper.setBackgroundColor(Color.TRANSPARENT)
+                    takePicture.show()
+                    done.hide()
+                    previewStack.hide()
+                }
+            } else {
+                binding.apply {
+                    cameraElementsWrapper.setBackgroundColor(
+                        this@BaseScannerActivity.getColor(
+                            R.color.darkGray
+                        )
+                    )
+                    done.show()
+                    previewStack.show()
+                }
+            }
+        }
     }
 
     private val orientationEventListener by lazy {
