@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
@@ -34,8 +35,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
-
-private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 
 class ScannerViewModel : ViewModel() {
     private lateinit var controller: LifecycleCameraController
@@ -106,7 +105,7 @@ class ScannerViewModel : ViewModel() {
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
-                FILENAME_FORMAT, Locale.US
+                context.getString(R.string.file_name_format), Locale.GERMANY
             ).format(System.currentTimeMillis()) + ".jpg"
         )
         // Create output options object which contains file + metadata

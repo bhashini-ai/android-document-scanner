@@ -9,4 +9,6 @@
 
     <string name="reviewPhotosDialogTitle">Review photos</string>
     <string name="close">Close</string>
+
+    <string name="file_name_format">yyyy-MM-dd-HH-mm-ss-SSS"</string>
 </resources>

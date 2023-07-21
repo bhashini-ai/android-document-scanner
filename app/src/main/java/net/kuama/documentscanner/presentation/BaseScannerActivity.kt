@@ -42,6 +42,8 @@ import net.kuama.documentscanner.extensions.show
 import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 abstract class BaseScannerActivity : AppCompatActivity() {
     companion object {
@@ -290,11 +292,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
-        // Works for the emulator
-        //        val outputPath =
-        //            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/output.pdf"
-        // Use this path to save  the PDF document to, when using as a library
-        val outputPath = applicationContext.cacheDir.absolutePath + "/output.pdf"
+        val date = SimpleDateFormat(this.getString(R.string.file_name_format), Locale.GERMANY)
+            .format(System.currentTimeMillis())
+        val outputPath = applicationContext.cacheDir.absolutePath + "/ScannedDocument-$date.pdf"
         val document = PdfDocument()
         for ((index, bitmap) in bitmaps.withIndex()) {
             val pageNumber = index + 1
@@ -334,7 +334,5 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     abstract fun onError(throwable: Throwable)
-
-    //    abstract fun onDocumentAccepted(bitmap: Bitmap, urisList: List<Uri>? = null)
     abstract fun onClose()
 }
