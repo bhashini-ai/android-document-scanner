@@ -187,11 +187,8 @@ class ScannerViewModel : ViewModel() {
     }
 
     fun onClosePreview() {
-        lastUri.value?.let {
-            val file = File(it.path!!)
-            if (file.exists()) {
-                file.delete()
-            }
+        _takenPhotos.value.forEach {
+            uri ->  uri.deleteIfLocal()
         }
     }
 

@@ -148,6 +148,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     private fun closePreview() {
         binding.rootView.visibility = View.GONE
         viewModel.onClosePreview()
+        this.outputDirectory().delete()
         orientationEventListener.disable()
         finish()
     }
