@@ -43,7 +43,7 @@ class ScannerViewModel : ViewModel() {
     /**
      * Observable data
      */
-    val isBusy = MutableLiveData<Boolean>()
+    val isLoading = MutableLiveData<Boolean>()
     private val openCv = MutableLiveData<EOpenCvStatus>()
     val corners = MutableLiveData<Corners?>()
     val errors = MutableLiveData<Throwable>()
@@ -68,16 +68,16 @@ class ScannerViewModel : ViewModel() {
         scannerActivity: AppCompatActivity,
         viewFinder: PreviewView
     ) {
-        isBusy.value = true
+        isLoading.value = true
         setupCamera(scannerActivity, viewFinder) {
             if (!didLoadOpenCv) {
                 openCVLoader.load {
-                    isBusy.value = false
+                    isLoading.value = false
                     openCv.value = it
                     didLoadOpenCv = true
                 }
             } else {
-                isBusy.value = false
+                isLoading.value = false
             }
         }
     }
@@ -102,7 +102,7 @@ class ScannerViewModel : ViewModel() {
     }
 
     fun onTakePicture(outputDirectory: File, context: Context) {
-        isBusy.value = true
+        isLoading.value = true
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
@@ -135,7 +135,7 @@ class ScannerViewModel : ViewModel() {
         viewFinder: PreviewView,
         then: () -> Unit
     ) {
-        isBusy.value = true
+        isLoading.value = true
 
         val executor: Executor = ContextCompat.getMainExecutor(lifecycleOwner)
         controller = LifecycleCameraController(lifecycleOwner)

@@ -86,8 +86,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         setContentView(binding.root)
         val viewModel: ScannerViewModel by viewModels()
 
-        viewModel.isBusy.observe(this) { isBusy ->
-            binding.progress.visibility = if (isBusy) {
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.progress.visibility = if (isLoading) {
                 View.VISIBLE
             } else {
                 View.INVISIBLE
