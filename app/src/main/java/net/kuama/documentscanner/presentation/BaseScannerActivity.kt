@@ -124,14 +124,15 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 }
             )
         }
+
         setUpPreviewAdapter()
         setOnFlashModeClicked()
         setOnTakePictureClicked()
         setOnDoneClicked()
         setOnCloseClicked()
         setOnPreviewStackClicked()
-
         this.viewModel = viewModel
+        observeCameraViewState()
         orientationEventListener.enable()
     }
 
@@ -139,29 +140,32 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         super.onResume()
         orientationEventListener.enable()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
-        updateUiElements()
     }
 
-    private fun updateUiElements() {
+    private fun observeCameraViewState() {
         viewModel.takenPhotos.observe(this) { photos ->
-            takenPhotosAdapter.addImageUris(*photos.toTypedArray())
-            if (photos.isNullOrEmpty()) {
-                binding.apply {
-                    cameraElementsWrapper.setBackgroundColor(Color.TRANSPARENT)
-                    takePicture.show()
-                    done.hide()
-                    previewStack.hide()
-                }
-            } else {
-                binding.apply {
-                    cameraElementsWrapper.setBackgroundColor(
-                        this@BaseScannerActivity.getColor(
-                            R.color.darkGray
-                        )
+            updateUiElements(photos)
+        }
+    }
+
+    private fun updateUiElements(photos: List<Uri>) {
+        takenPhotosAdapter.addImageUris(*photos.toTypedArray())
+        if (photos.isEmpty()) {
+            binding.apply {
+                cameraElementsWrapper.setBackgroundColor(Color.TRANSPARENT)
+                takePicture.show()
+                done.hide()
+                previewStack.hide()
+            }
+        } else {
+            binding.apply {
+                cameraElementsWrapper.setBackgroundColor(
+                    this@BaseScannerActivity.getColor(
+                        R.color.darkGray
                     )
-                    done.show()
-                    previewStack.show()
-                }
+                )
+                done.show()
+                previewStack.show()
             }
         }
     }
