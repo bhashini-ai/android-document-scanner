@@ -17,11 +17,11 @@ import net.kuama.documentscanner.extensions.loadImageUri
 
 class ReviewTakenPhotosDialog : DialogFragment() {
 
+    @Suppress("DEPRECATION")
     private val photoAdapter: ReviewPhotosAdapter by lazy {
-        val uris =
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) requireArguments().getParcelableArrayList(
-                EXTRA_PHOTOS
-            ) else requireArguments().getParcelableArrayList(EXTRA_PHOTOS, Uri::class.java)
+        val uris = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU)
+            requireArguments().getParcelableArrayList(EXTRA_PHOTOS)
+        else requireArguments().getParcelableArrayList(EXTRA_PHOTOS, Uri::class.java)
 
         ReviewPhotosAdapter(
             uris ?: emptyList(),
