@@ -3,7 +3,6 @@ package net.kuama.documentscanner.presentation
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -163,7 +162,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 }
                 // for normal ordering of the pages, otherwise the pages are reversed
                 bitmapsList.reverse()
-                this@BaseScannerActivity.outputDirectory().deleteRecursively()
                 withContext(Dispatchers.IO) {
                     convertBitmapsToPdf(bitmapsList)
                 }

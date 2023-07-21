@@ -12,6 +12,7 @@ import net.kuama.documentscanner.support.Failure
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.domain.PerspectiveTransform
 import net.kuama.documentscanner.domain.UriToBitmap
+import net.kuama.documentscanner.extensions.deleteIfLocal
 
 class CropperViewModel : ViewModel() {
     private val perspectiveTransform: PerspectiveTransform = PerspectiveTransform()
@@ -34,6 +35,7 @@ class CropperViewModel : ViewModel() {
                 either.fold(::handleFailure) { preview ->
                     originalBitmap.value = preview
                     analyze(preview)
+                    uri.deleteIfLocal()
                 }
             }
         }
