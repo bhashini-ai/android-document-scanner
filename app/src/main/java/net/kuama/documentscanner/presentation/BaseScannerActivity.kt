@@ -129,7 +129,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             closePreview()
         }
         setUpPreviewAdapter()
-//        setOnPreviewStackClicked()
+        setOnPreviewStackClicked()
 
         this.viewModel = viewModel
         orientationEventListener.enable()
@@ -140,8 +140,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         orientationEventListener.enable()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
         updateUiElements()
-//        setOnPreviewStackClicked()
-//        updateDialog()
     }
 
 
@@ -257,7 +255,10 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     private fun setOnPreviewStackClicked() {
         binding.previewStack.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
+                ReviewTakenPhotosDialog.show(
+                    this,
+                    takenPhotosAdapter.imageUris
+                ) { removedItemIndex ->
                     viewModel.deletePhoto(removedItemIndex)
                 }
                 return@setOnTouchListener true

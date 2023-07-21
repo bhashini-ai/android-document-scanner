@@ -11,14 +11,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.RecyclerView
-import net.kuama.documentscanner.R
 import net.kuama.documentscanner.databinding.DialogReviewPhotosBinding
 import net.kuama.documentscanner.databinding.ListItemReviewedPhotoBinding
 import net.kuama.documentscanner.extensions.loadImageUri
 
 class ReviewTakenPhotosDialog : DialogFragment() {
-
-    private val binding by lazy { DialogReviewPhotosBinding.inflate(layoutInflater, null, false) }
 
     private val photoAdapter: ReviewPhotosAdapter by lazy {
         val uris =
@@ -40,16 +37,19 @@ class ReviewTakenPhotosDialog : DialogFragment() {
         )
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog = AlertDialog.Builder(requireContext())
-        .setTitle("Review taken photos")
-        .setView(R.layout.dialog_review_photos)
-        .setNegativeButton("ok") { dialog, _ -> dialog?.dismiss() }
-        .create().also {
-            isCancelable = false
-            it.setOnShowListener {
-                binding.photos.adapter = photoAdapter
+    override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog {
+        val binding = DialogReviewPhotosBinding.inflate(layoutInflater, null, false)
+        return AlertDialog.Builder(requireContext())
+            .setTitle("Review taken photos")
+            .setView(binding.root)
+            .setNegativeButton("ok") { dialog, _ -> dialog?.dismiss() }
+            .create().also {
+                isCancelable = false
+                it.setOnShowListener {
+                    binding.photos.adapter = photoAdapter
+                }
             }
-        }
+    }
 
     companion object {
         private const val EXTRA_PHOTOS = "photoUrisExtra"
