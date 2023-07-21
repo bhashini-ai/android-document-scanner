@@ -33,13 +33,13 @@ class CropperActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCropperBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
         val extras = intent.extras
         if (extras != null) {
             bitmapUri = intent.extras?.getString("lastUri")?.toUri() ?: error("invalid uri")
-            screenOrientationDeg = if (intent.extras?.getInt("screenOrientationDeg") != null) intent.extras!!.getInt("screenOrientationDeg") else 0
+            screenOrientationDeg = if (intent.extras?.getInt("screenOrientationDeg") != null)
+                intent.extras!!.getInt("screenOrientationDeg") else 0
         }
 
         val cropModel: CropperViewModel by viewModels()
@@ -60,47 +60,18 @@ class CropperActivity : AppCompatActivity() {
         }
 
         cropModel.errors.observe(this) {
-            Toast.makeText(this, this.resources.getText(R.string.crop_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, this.resources.getText(R.string.crop_error), Toast.LENGTH_SHORT)
+                .show()
         }
 
         cropModel.bitmapToCrop.observe(this) {
             binding.cropResultPreview.setImageBitmap(cropModel.bitmapToCrop.value)
         }
 
-        binding.closeResultPreview.setOnClickListener {
-            closeActivity()
-        }
-
-        binding.closeCropPreview.setOnClickListener {
-            closeActivity()
-        }
-
-        binding.confirmCropPreview.setOnClickListener {
-            binding.cropWrap.visibility = View.GONE
-            binding.cropHud.visibility = View.GONE
-            val bitmapToCrop = loadBitmapFromView(binding.cropPreview)
-
-            cropModel.onCornersAccepted(bitmapToCrop)
-
-            binding.cropResultWrap.visibility = View.VISIBLE
-        }
-
-        binding.confirmCropResult.setOnClickListener {
-
-            val file = File(this.outputDirectory(), "${UUID.randomUUID()}.jpg")
-
-            val outputStream = FileOutputStream(file)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            outputStream.write(cropModel.bitmapToCrop.value?.toByteArray(byteArrayOutputStream))
-            outputStream.close()
-            byteArrayOutputStream.close()
-
-            val resultIntent = Intent()
-            resultIntent.putExtra("croppedPath", file.absolutePath)
-            setResult(RESULT_OK, resultIntent)
-
-            finish()
-        }
+        setOnCloseCropPreviewClicked()
+        setOnCloseResultPreviewClicked()
+        setOnConfirmCropPreviewClicked()
+        setOnConfirmCropResultClicked()
 
         binding.cropPreview.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             view.performClick()
@@ -113,6 +84,47 @@ class CropperActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         cropModel.onViewCreated(bitmapUri, screenOrientationDeg)
+    }
+
+    private fun setOnCloseCropPreviewClicked() {
+        binding.closeCropPreview.setOnClickListener {
+            closeActivity()
+        }
+    }
+
+    private fun setOnCloseResultPreviewClicked() {
+        binding.closeResultPreview.setOnClickListener {
+            closeActivity()
+        }
+    }
+
+    private fun setOnConfirmCropPreviewClicked() {
+        binding.confirmCropPreview.setOnClickListener {
+            binding.cropWrap.visibility = View.GONE
+            binding.cropHud.visibility = View.GONE
+            val bitmapToCrop = loadBitmapFromView(binding.cropPreview)
+
+            cropModel.onCornersAccepted(bitmapToCrop)
+
+            binding.cropResultWrap.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setOnConfirmCropResultClicked() {
+        binding.confirmCropResult.setOnClickListener {
+            val file = File(this.outputDirectory(), "${UUID.randomUUID()}.jpg")
+
+            val outputStream = FileOutputStream(file)
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            outputStream.write(cropModel.bitmapToCrop.value?.toByteArray(byteArrayOutputStream))
+            outputStream.close()
+            byteArrayOutputStream.close()
+
+            val resultIntent = Intent()
+            resultIntent.putExtra("croppedPath", file.absolutePath)
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        }
     }
 
     private fun closeActivity() {
