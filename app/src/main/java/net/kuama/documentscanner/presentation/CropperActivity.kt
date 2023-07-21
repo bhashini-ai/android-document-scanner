@@ -77,11 +77,7 @@ class CropperActivity : AppCompatActivity() {
         setOnConfirmCropPreviewClicked()
         setOnConfirmCropResultClicked()
         setFullscreen()
-
-        binding.cropPreview.setOnTouchListener { view: View, motionEvent: MotionEvent ->
-            view.performClick()
-            binding.cropHud.onTouch(motionEvent)
-        }
+        setOnCropPreviewTouched()
 
         this.cropModel = cropModel
     }
@@ -152,6 +148,13 @@ class CropperActivity : AppCompatActivity() {
             resultIntent.putExtra("croppedPath", file.absolutePath)
             setResult(RESULT_OK, resultIntent)
             finish()
+        }
+    }
+
+    private fun setOnCropPreviewTouched() {
+        binding.cropPreview.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            view.performClick()
+            binding.cropHud.onTouch(motionEvent)
         }
     }
 
