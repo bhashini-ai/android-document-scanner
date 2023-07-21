@@ -20,7 +20,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.StackFrom
@@ -202,17 +201,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
         binding.previewStack.layoutManager = layoutManager
         binding.previewStack.adapter = takenPhotosAdapter
-    }
-
-    private fun updateDialog() {
-        val dialogFragment =
-            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
-        if (dialogFragment?.dialog != null) {
-            dialogFragment.dismiss()
-            ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
-                viewModel.deletePhoto(removedItemIndex)
-            }
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")

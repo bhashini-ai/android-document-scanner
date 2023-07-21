@@ -187,8 +187,8 @@ class ScannerViewModel : ViewModel() {
     }
 
     fun onClosePreview() {
-        _takenPhotos.value.forEach {
-            uri ->  uri.deleteIfLocal()
+        _takenPhotos.value.forEach { uri ->
+            uri.deleteIfLocal()
         }
     }
 
@@ -204,10 +204,11 @@ class ScannerViewModel : ViewModel() {
 
     fun deletePhoto(index: Int) {
         _takenPhotos.update { photos ->
-            photos.toMutableList().apply {
+            val updatedPhotos = photos.toMutableList()
+            updatedPhotos.apply {
                 removeAt(index).also { removedPhoto -> removedPhoto.deleteIfLocal() }
             }
-            photos
+            updatedPhotos
         }
     }
 }
