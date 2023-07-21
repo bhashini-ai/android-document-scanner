@@ -58,20 +58,32 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
                 val uri = Uri.fromFile(File(bitmapUri))
                 viewModel.savePhoto(uri)
-                //todo: delete the original image file when it's not needed anymore
             } else {
                 logError(TAG, "resultLauncher: $result.resultCode")
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
         }
 
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(this) {
+            override fun onOrientationChanged(orientation: Int) {
+                val rotationDegree = when (orientation) {
+                    ORIENTATION_UNKNOWN -> return
+                    in 45 until 135 -> 270
+                    in 135 until 225 -> 180
+                    in 225 until 315 -> 90
+                    else -> Surface.ROTATION_0
+                }
+
+                viewModel.onScreenOrientationDegChange(rotationDegree)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityScannerBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
-
         val viewModel: ScannerViewModel by viewModels()
 
         viewModel.isBusy.observe(this) { isBusy ->
@@ -112,23 +124,11 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 }
             )
         }
-
-        binding.flashMode.setOnClickListener {
-            viewModel.onFlashToggle()
-        }
-
-        binding.takePicture.setOnClickListener {
-            viewModel.onTakePicture(this.outputDirectory(), this)
-        }
-
-        binding.done.setOnClickListener {
-            onDoneClicked()
-        }
-
-        binding.closeScanner.setOnClickListener {
-            closePreview()
-        }
         setUpPreviewAdapter()
+        setOnFlashModeClicked()
+        setOnTakePictureClicked()
+        setOnDoneClicked()
+        setOnCloseClicked()
         setOnPreviewStackClicked()
 
         this.viewModel = viewModel
@@ -142,13 +142,89 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         updateUiElements()
     }
 
+    private fun updateUiElements() {
+        viewModel.takenPhotos.observe(this) { photos ->
+            takenPhotosAdapter.addImageUris(*photos.toTypedArray())
+            if (photos.isNullOrEmpty()) {
+                binding.apply {
+                    cameraElementsWrapper.setBackgroundColor(Color.TRANSPARENT)
+                    takePicture.show()
+                    done.hide()
+                    previewStack.hide()
+                }
+            } else {
+                binding.apply {
+                    cameraElementsWrapper.setBackgroundColor(
+                        this@BaseScannerActivity.getColor(
+                            R.color.darkGray
+                        )
+                    )
+                    done.show()
+                    previewStack.show()
+                }
+            }
+        }
+    }
 
-    private fun closePreview() {
-        binding.rootView.visibility = View.GONE
-        viewModel.onClosePreview()
-        this.outputDirectory().delete()
-        orientationEventListener.disable()
-        finish()
+    private fun setOnFlashModeClicked() {
+        binding.flashMode.setOnClickListener {
+            viewModel.onFlashToggle()
+        }
+    }
+
+    private fun setOnTakePictureClicked() {
+        binding.takePicture.setOnClickListener {
+            viewModel.onTakePicture(this.outputDirectory(), this)
+        }
+    }
+
+    private fun setOnDoneClicked() {
+        binding.done.setOnClickListener {
+            onDoneClicked()
+        }
+    }
+
+    private fun setOnCloseClicked() {
+        binding.closeScanner.setOnClickListener {
+            onClosePreview()
+        }
+    }
+
+    private fun setUpPreviewAdapter() {
+        val layoutManager = CardStackLayoutManager(this).apply {
+            setStackFrom(StackFrom.TopAndRight)
+            setSwipeableMethod(SwipeableMethod.None)
+            setVisibleCount(3)
+        }
+        binding.previewStack.layoutManager = layoutManager
+        binding.previewStack.adapter = takenPhotosAdapter
+    }
+
+    private fun updateDialog() {
+        val dialogFragment =
+            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
+        if (dialogFragment?.dialog != null) {
+            dialogFragment.dismiss()
+            ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
+                viewModel.deletePhoto(removedItemIndex)
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOnPreviewStackClicked() {
+        binding.previewStack.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                ReviewTakenPhotosDialog.show(
+                    this,
+                    takenPhotosAdapter.imageUris
+                ) { removedItemIndex ->
+                    viewModel.deletePhoto(removedItemIndex)
+                }
+                return@setOnTouchListener true
+            }
+            return@setOnTouchListener true
+        }
     }
 
     private fun onDoneClicked() {
@@ -230,81 +306,12 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpPreviewAdapter() {
-        val layoutManager = CardStackLayoutManager(this).apply {
-            setStackFrom(StackFrom.TopAndRight)
-            setSwipeableMethod(SwipeableMethod.None)
-            setVisibleCount(3)
-        }
-        binding.previewStack.layoutManager = layoutManager
-        binding.previewStack.adapter = takenPhotosAdapter
-    }
-
-    private fun updateDialog() {
-        val dialogFragment =
-            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
-        if (dialogFragment?.dialog != null) {
-            dialogFragment.dismiss()
-            ReviewTakenPhotosDialog.show(this, takenPhotosAdapter.imageUris) { removedItemIndex ->
-                viewModel.deletePhoto(removedItemIndex)
-            }
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setOnPreviewStackClicked() {
-        binding.previewStack.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                ReviewTakenPhotosDialog.show(
-                    this,
-                    takenPhotosAdapter.imageUris
-                ) { removedItemIndex ->
-                    viewModel.deletePhoto(removedItemIndex)
-                }
-                return@setOnTouchListener true
-            }
-            return@setOnTouchListener true
-        }
-    }
-
-    private fun updateUiElements() {
-        viewModel.takenPhotos.observe(this) { photos ->
-            takenPhotosAdapter.addImageUris(*photos.toTypedArray())
-            if (photos.isNullOrEmpty()) {
-                binding.apply {
-                    cameraElementsWrapper.setBackgroundColor(Color.TRANSPARENT)
-                    takePicture.show()
-                    done.hide()
-                    previewStack.hide()
-                }
-            } else {
-                binding.apply {
-                    cameraElementsWrapper.setBackgroundColor(
-                        this@BaseScannerActivity.getColor(
-                            R.color.darkGray
-                        )
-                    )
-                    done.show()
-                    previewStack.show()
-                }
-            }
-        }
-    }
-
-    private val orientationEventListener by lazy {
-        object : OrientationEventListener(this) {
-            override fun onOrientationChanged(orientation: Int) {
-                val rotationDegree = when (orientation) {
-                    ORIENTATION_UNKNOWN -> return
-                    in 45 until 135 -> 270
-                    in 135 until 225 -> 180
-                    in 225 until 315 -> 90
-                    else -> Surface.ROTATION_0
-                }
-
-                viewModel.onScreenOrientationDegChange(rotationDegree)
-            }
-        }
+    private fun onClosePreview() {
+        binding.rootView.visibility = View.GONE
+        viewModel.onClosePreview()
+        this.outputDirectory().delete()
+        orientationEventListener.disable()
+        finish()
     }
 
     abstract fun onError(throwable: Throwable)
