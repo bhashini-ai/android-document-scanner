@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.RecyclerView
+import net.kuama.documentscanner.R
 import net.kuama.documentscanner.databinding.DialogReviewPhotosBinding
 import net.kuama.documentscanner.databinding.ListItemReviewedPhotoBinding
 import net.kuama.documentscanner.extensions.loadImageUri
@@ -40,9 +41,9 @@ class ReviewTakenPhotosDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog {
         val binding = DialogReviewPhotosBinding.inflate(layoutInflater, null, false)
         return AlertDialog.Builder(requireContext())
-            .setTitle("Review taken photos")
+            .setTitle(requireContext().getString(R.string.reviewPhotosDialogTitle))
             .setView(binding.root)
-            .setNegativeButton("ok") { dialog, _ -> dialog?.dismiss() }
+            .setNegativeButton(requireContext().getString(R.string.close)) { dialog, _ -> dialog?.dismiss() }
             .create().also {
                 isCancelable = false
                 it.setOnShowListener {
