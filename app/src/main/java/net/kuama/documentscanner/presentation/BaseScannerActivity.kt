@@ -23,6 +23,7 @@ import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.StackFrom
@@ -165,7 +166,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         } else {
             binding.apply {
                 cameraElementsWrapper.setBackgroundColor(
-                    this@BaseScannerActivity.getColor(
+                    ContextCompat.getColor(
+                        this@BaseScannerActivity,
                         R.color.darkGray
                     )
                 )

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
 
-        minSdkVersion 27
+        minSdkVersion 21
         targetSdkVersion 32
         versionCode project.property("version_code").toInteger()
         versionName project.property("version_name") as String
