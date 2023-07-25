@@ -29,7 +29,7 @@ import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.enums.EFlashStatus
 import net.kuama.documentscanner.enums.EOpenCvStatus
-import net.kuama.documentscanner.extensions.deleteIfLocal
+import net.kuama.documentscanner.extensions.delete
 import net.kuama.documentscanner.extensions.logDebug
 import java.io.File
 import java.text.SimpleDateFormat
@@ -196,7 +196,7 @@ class ScannerViewModel : ViewModel() {
 
     fun onClosePreview() {
         _takenPhotos.value.forEach { uri ->
-            uri.deleteIfLocal()
+            uri.delete()
         }
     }
 
@@ -214,7 +214,7 @@ class ScannerViewModel : ViewModel() {
         _takenPhotos.update { photos ->
             val updatedPhotos = photos.toMutableList()
             updatedPhotos.apply {
-                removeAt(index).also { removedPhoto -> removedPhoto.deleteIfLocal() }
+                removeAt(index).also { removedPhoto -> removedPhoto.delete() }
             }
             updatedPhotos
         }

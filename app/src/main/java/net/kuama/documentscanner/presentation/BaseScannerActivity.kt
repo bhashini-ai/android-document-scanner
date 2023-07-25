@@ -35,7 +35,7 @@ import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.databinding.ActivityScannerBinding
 import net.kuama.documentscanner.enums.EFlashStatus
-import net.kuama.documentscanner.extensions.deleteIfLocal
+import net.kuama.documentscanner.extensions.delete
 import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
@@ -259,7 +259,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                     val bitmap =
                         getBitmapFromImageUri(uri) ?: return@forEach
                     bitmapsList.add(bitmap)
-                    uri.deleteIfLocal()
+                    uri.delete()
                 }
                 outputDirectory().delete()
                 // for normal ordering of the pages, otherwise the pages are reversed
