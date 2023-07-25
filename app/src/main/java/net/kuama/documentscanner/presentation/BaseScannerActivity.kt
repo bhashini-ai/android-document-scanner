@@ -92,11 +92,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         val viewModel: ScannerViewModel by viewModels()
 
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progress.visibility = if (isLoading) {
-                View.VISIBLE
-            } else {
-                View.INVISIBLE
-            }
+            if (isLoading) binding.progress.show() else binding.progress.hide()
         }
 
         viewModel.lastUri.observe(this) {
@@ -309,7 +305,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             canvas.drawBitmap(bitmap, 0f, 0f, null)
             document.finishPage(page)
         }
-        // todo: delete the file when it's not needed anymore
+        // todo: delete the PDF file when it's not needed anymore
         val file = File(outputPath)
         if (file.exists()) {
             val isDeleted = file.delete()

@@ -38,9 +38,6 @@ import java.util.concurrent.Executor
 class ScannerViewModel : ViewModel() {
     private lateinit var controller: LifecycleCameraController
 
-    /**
-     * Observable data
-     */
     val isLoading = MutableLiveData<Boolean>()
     private val openCv = MutableLiveData<EOpenCvStatus>()
     val corners = MutableLiveData<Corners?>()
@@ -53,14 +50,9 @@ class ScannerViewModel : ViewModel() {
 
     private var didLoadOpenCv = false
 
-    /**
-     * Use cases
-     */
     private val findPaperSheetUseCase: FindPaperSheetContours = FindPaperSheetContours()
 
-    /**
-     * Tries to load OpenCv native libraries
-     */
+    /*** Tries to load OpenCv native libraries */
     fun onViewCreated(
         openCVLoader: OpenCVLoader,
         scannerActivity: AppCompatActivity,

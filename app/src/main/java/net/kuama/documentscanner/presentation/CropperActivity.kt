@@ -18,8 +18,10 @@ import androidx.core.net.toUri
 import androidx.core.view.doOnNextLayout
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.databinding.ActivityCropperBinding
+import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.loadBitmapFromView
 import net.kuama.documentscanner.extensions.outputDirectory
+import net.kuama.documentscanner.extensions.show
 import net.kuama.documentscanner.extensions.toByteArray
 import net.kuama.documentscanner.viewmodels.CropperViewModel
 import java.io.ByteArrayOutputStream
@@ -51,7 +53,7 @@ class CropperActivity : AppCompatActivity() {
         // Picture taken from User
         cropModel.originalBitmap.observe(this) {
             binding.cropPreview.setImageBitmap(cropModel.originalBitmap.value)
-            binding.cropWrap.visibility = View.VISIBLE
+            binding.cropWrap.show()
 
             // Wait for bitmap to be loaded on view, then draw corners
             binding.cropWrap.doOnNextLayout {
@@ -124,13 +126,13 @@ class CropperActivity : AppCompatActivity() {
 
     private fun setOnConfirmCropPreviewClicked() {
         binding.confirmCropPreview.setOnClickListener {
-            binding.cropWrap.visibility = View.GONE
-            binding.cropHud.visibility = View.GONE
+            binding.cropWrap.hide()
+            binding.cropHud.hide()
             val bitmapToCrop = loadBitmapFromView(binding.cropPreview)
 
             cropModel.onCornersAccepted(bitmapToCrop)
 
-            binding.cropResultWrap.visibility = View.VISIBLE
+            binding.cropResultWrap.show()
         }
     }
 
