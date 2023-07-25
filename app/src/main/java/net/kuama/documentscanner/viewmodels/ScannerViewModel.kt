@@ -1,6 +1,5 @@
 package net.kuama.documentscanner.viewmodels
 
-import net.kuama.documentscanner.enums.EOpenCvStatus
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -29,6 +28,7 @@ import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.enums.EOpenCvStatus
 import net.kuama.documentscanner.extensions.deleteIfLocal
 import net.kuama.documentscanner.extensions.logDebug
 import java.io.File
@@ -110,6 +110,7 @@ class ScannerViewModel : ViewModel() {
         )
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+        disableImageAnalysis()
         controller.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(context),
@@ -183,6 +184,14 @@ class ScannerViewModel : ViewModel() {
                 onSuccess?.invoke()
             }
         }
+    }
+
+    private fun disableImageAnalysis() {
+        controller.clearImageAnalysisAnalyzer()
+    }
+
+    fun clearCorners() {
+        corners.value = null
     }
 
     fun onClosePreview() {

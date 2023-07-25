@@ -145,6 +145,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         orientationEventListener.enable()
+        viewModel.clearCorners()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
     }
 
