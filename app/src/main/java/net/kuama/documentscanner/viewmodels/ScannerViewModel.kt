@@ -102,6 +102,7 @@ class ScannerViewModel : ViewModel() {
 
     fun onTakePicture(outputDirectory: File, context: Context) {
         isLoading.value = true
+        disableImageAnalysis()
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
@@ -110,7 +111,6 @@ class ScannerViewModel : ViewModel() {
         )
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        disableImageAnalysis()
         controller.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(context),

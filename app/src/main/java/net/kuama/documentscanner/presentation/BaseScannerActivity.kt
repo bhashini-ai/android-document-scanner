@@ -64,7 +64,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 val uri = Uri.fromFile(File(bitmapUri))
                 viewModel.savePhoto(uri)
             } else {
-                logError(TAG, "resultLauncher: $result.resultCode")
+                logError(TAG, "resultLauncher: ${result.resultCode}")
                 viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
             }
         }
