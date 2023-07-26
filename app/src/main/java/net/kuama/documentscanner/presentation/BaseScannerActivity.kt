@@ -271,9 +271,15 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 withContext(Dispatchers.IO) {
                     convertBitmapsToPdf(bitmapsList)
                 }
-                // todo: pass the PDF document
-                setResult(RESULT_OK)
-                finish()
+                val uri = getScannedDocumentUri()
+                if (uri == null) {
+                    setResult(RESULT_CANCELED)
+                    finish()
+                } else {
+                    val intent = intent.putExtra("ScannedDocumentUri", uri)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
             }
         }
     }
@@ -330,6 +336,12 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         } finally {
             document.close()
         }
+    }
+
+    private fun getScannedDocumentUri(): Uri? {
+        val scannedDocument =
+            cacheDir.listFiles()?.last { file -> file.name.startsWith("ScannedDocument") }
+        return Uri.fromFile(scannedDocument)
     }
 
     private fun onClosePreview() {
