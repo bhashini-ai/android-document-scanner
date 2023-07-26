@@ -91,9 +91,14 @@ class ScannerViewModel : ViewModel() {
         }
     }
 
-    fun onTakePicture(outputDirectory: File, context: Context, viewFinder: PreviewView, actionShow : (Bitmap) -> Unit) {
+    fun onTakePicture(
+        outputDirectory: File,
+        context: Context,
+        viewFinder: PreviewView,
+        actionShow: (Bitmap) -> Unit
+    ) {
         isLoading.value = true
-        disableImageAnalysis()
+        stopImageAnalysis()
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
@@ -174,8 +179,19 @@ class ScannerViewModel : ViewModel() {
         }
     }
 
-    private fun disableImageAnalysis() {
+    /** By only clearing the ImageAnalysisAnalyzer and not disabling the IMAGE_ANALYSIS use case,
+     *  we keep the outlines of the document shown */
+    private fun stopImageAnalysis() {
         controller.clearImageAnalysisAnalyzer()
+    }
+
+    fun disableImageAnalysisUseCase() {
+        controller.setEnabledUseCases(IMAGE_CAPTURE)
+        clearCorners()
+    }
+
+    fun enableImageAnalysisUseCase() {
+        controller.setEnabledUseCases(IMAGE_CAPTURE or IMAGE_ANALYSIS)
     }
 
     fun clearCorners() {
