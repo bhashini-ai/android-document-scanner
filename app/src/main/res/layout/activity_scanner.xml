@@ -54,6 +54,7 @@
         app:tint="@color/white" />
 
     <FrameLayout
+        android:elevation="2dp"
         android:id="@+id/cameraElementsWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
