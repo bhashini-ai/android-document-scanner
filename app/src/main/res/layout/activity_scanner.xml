@@ -11,6 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+   <androidx.appcompat.widget.AppCompatImageView
+       android:elevation="1dp"
+        android:id="@+id/previewOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ImageView
         android:id="@+id/opencv_preview"
         android:layout_width="wrap_content"
@@ -21,6 +27,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <net.kuama.documentscanner.presentation.PaperRectangle
+        android:elevation="2dp"
         android:id="@+id/hud"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -86,6 +93,7 @@
     </FrameLayout>
 
     <ProgressBar
+        android:elevation="2dp"
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

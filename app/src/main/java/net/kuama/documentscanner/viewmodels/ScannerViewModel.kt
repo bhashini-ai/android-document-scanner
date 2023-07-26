@@ -91,7 +91,7 @@ class ScannerViewModel : ViewModel() {
         }
     }
 
-    fun onTakePicture(outputDirectory: File, context: Context) {
+    fun onTakePicture(outputDirectory: File, context: Context, viewFinder: PreviewView, actionShow : (Bitmap) -> Unit) {
         isLoading.value = true
         disableImageAnalysis()
         val photoFile = File(
@@ -114,6 +114,7 @@ class ScannerViewModel : ViewModel() {
                     lastUri.value = output.savedUri
                 }
             })
+        viewFinder.bitmap?.let { actionShow.invoke(it) }
     }
 
     @SuppressLint("RestrictedApi", "UnsafeExperimentalUsageError")

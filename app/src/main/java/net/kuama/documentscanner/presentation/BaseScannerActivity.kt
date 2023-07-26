@@ -142,6 +142,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         super.onResume()
         orientationEventListener.enable()
         viewModel.clearCorners()
+        binding.previewOverlay.hide()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
     }
 
@@ -205,7 +206,14 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     private fun setOnTakePictureClicked() {
         binding.takePicture.setOnClickListener {
-            viewModel.onTakePicture(this.outputDirectory(), this)
+            viewModel.onTakePicture(
+                this.outputDirectory(),
+                this,
+                binding.viewFinder
+            ) { viewFinderBitmap ->
+                binding.previewOverlay.show()
+                binding.previewOverlay.setImageBitmap(viewFinderBitmap)
+            }
         }
     }
 
