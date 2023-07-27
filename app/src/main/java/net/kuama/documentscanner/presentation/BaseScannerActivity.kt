@@ -40,6 +40,7 @@ import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.extensions.show
+import net.kuama.documentscanner.extensions.toast
 import net.kuama.documentscanner.viewmodels.ScannerViewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -49,6 +50,7 @@ import java.util.Locale
 abstract class BaseScannerActivity : AppCompatActivity() {
     companion object {
         private val TAG = ScannerActivity::class.java.simpleName
+        const val EXTRA_URI = "ScannedDocumentUri"
     }
 
     lateinit var viewModel: ScannerViewModel
@@ -273,10 +275,11 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 }
                 val uri = getScannedDocumentUri()
                 if (uri == null) {
+                    toast("Uri is null")
                     setResult(RESULT_CANCELED)
                     finish()
                 } else {
-                    val intent = intent.putExtra("ScannedDocumentUri", uri)
+                    val intent = intent.putExtra(EXTRA_URI, uri)
                     setResult(RESULT_OK, intent)
                     finish()
                 }
