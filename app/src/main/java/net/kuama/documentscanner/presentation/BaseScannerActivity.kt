@@ -24,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.StackFrom
@@ -142,10 +143,16 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        updateDialog()
         orientationEventListener.enable()
         viewModel.clearCorners()
         binding.previewOverlay.hide()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        dismissDialog()
     }
 
     private fun observeCameraViewState() {
@@ -174,6 +181,32 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 done.show()
                 previewStack.show()
             }
+        }
+    }
+
+    private fun updateDialog() {
+        val dialogFragment =
+            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
+
+        if (dialogFragment?.dialog != null) {
+            dialogFragment.dismiss()
+            ReviewTakenPhotosDialog.show(
+                this,
+                takenPhotosAdapter.imageUris,
+                onReceiveDeletedPhotoIndex = { removedItemIndex ->
+                    viewModel.deletePhoto(removedItemIndex)
+                },
+                onDialogDismissed = {
+                    viewModel.enableImageAnalysisUseCase()
+                })
+        }
+    }
+
+    private fun dismissDialog() {
+        val dialogFragment =
+            this.supportFragmentManager.findFragmentByTag(ReviewTakenPhotosDialog::class.simpleName) as? DialogFragment
+        if (dialogFragment?.dialog?.isShowing == false) {
+            dialogFragment.dismiss()
         }
     }
 
@@ -245,12 +278,16 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     private fun setOnPreviewStackClicked() {
         binding.previewStack.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
+                viewModel.disableImageAnalysisUseCase()
                 ReviewTakenPhotosDialog.show(
                     this,
-                    takenPhotosAdapter.imageUris
-                ) { removedItemIndex ->
-                    viewModel.deletePhoto(removedItemIndex)
-                }
+                    takenPhotosAdapter.imageUris,
+                    onReceiveDeletedPhotoIndex = { removedItemIndex ->
+                        viewModel.deletePhoto(removedItemIndex)
+                    }, onDialogDismissed = {
+                        viewModel.enableImageAnalysisUseCase()
+                    }
+                )
                 return@setOnTouchListener true
             }
             return@setOnTouchListener true
@@ -322,7 +359,6 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             canvas.drawBitmap(bitmap, 0f, 0f, null)
             document.finishPage(page)
         }
-        // todo: delete the PDF file when it's not needed anymore
         val file = File(outputPath)
         if (file.exists()) {
             val isDeleted = file.delete()

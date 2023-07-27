@@ -60,7 +60,8 @@ class ReviewTakenPhotosDialog : DialogFragment() {
         fun show(
             act: FragmentActivity,
             takenPhotos: List<Uri>,
-            onReceiveDeletedPhotoIndex: (Int) -> Unit
+            onReceiveDeletedPhotoIndex: (Int) -> Unit,
+            onDialogDismissed: () -> Unit
         ) {
             val dialog = ReviewTakenPhotosDialog()
             dialog.arguments = bundleOf(EXTRA_PHOTOS to takenPhotos)
@@ -68,6 +69,11 @@ class ReviewTakenPhotosDialog : DialogFragment() {
             act.supportFragmentManager.setFragmentResultListener(KEY_RESULT, act) { _, bundle ->
                 val resultData = bundle.getInt(EXTRA_REMOVED_PHOTO_INDEX)
                 onReceiveDeletedPhotoIndex(resultData)
+            }
+
+            act.supportFragmentManager.executePendingTransactions()
+            dialog.requireDialog().setOnDismissListener {
+                onDialogDismissed()
             }
         }
     }
