@@ -1,6 +1,7 @@
 package net.kuama.documentscanner.presentation
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -52,10 +53,17 @@ class ReviewTakenPhotosDialog : DialogFragment() {
             }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        mOnDialogDismissed?.invoke()
+    }
+
     companion object {
         private const val EXTRA_PHOTOS = "photoUrisExtra"
         private const val KEY_RESULT = "resultKey"
         private const val EXTRA_REMOVED_PHOTO_INDEX = "removedPhotoIndexExtra"
+
+        var mOnDialogDismissed: (() -> Unit)? = null
 
         fun show(
             act: FragmentActivity,
@@ -66,14 +74,10 @@ class ReviewTakenPhotosDialog : DialogFragment() {
             val dialog = ReviewTakenPhotosDialog()
             dialog.arguments = bundleOf(EXTRA_PHOTOS to takenPhotos)
             dialog.show(act.supportFragmentManager, ReviewTakenPhotosDialog::class.simpleName)
+            mOnDialogDismissed = onDialogDismissed
             act.supportFragmentManager.setFragmentResultListener(KEY_RESULT, act) { _, bundle ->
                 val resultData = bundle.getInt(EXTRA_REMOVED_PHOTO_INDEX)
                 onReceiveDeletedPhotoIndex(resultData)
-            }
-
-            act.supportFragmentManager.executePendingTransactions()
-            dialog.requireDialog().setOnDismissListener {
-                onDialogDismissed()
             }
         }
     }
