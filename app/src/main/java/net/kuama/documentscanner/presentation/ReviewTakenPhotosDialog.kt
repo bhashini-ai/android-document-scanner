@@ -53,6 +53,11 @@ class ReviewTakenPhotosDialog : DialogFragment() {
             }
     }
 
+    override fun onResume() {
+        super.onResume()
+        mOnDialogResumed?.invoke()
+    }
+
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         mOnDialogDismissed?.invoke()
@@ -63,14 +68,17 @@ class ReviewTakenPhotosDialog : DialogFragment() {
         private const val KEY_RESULT = "resultKey"
         private const val EXTRA_REMOVED_PHOTO_INDEX = "removedPhotoIndexExtra"
 
+        var mOnDialogResumed: (() -> Unit)? = null
         var mOnDialogDismissed: (() -> Unit)? = null
 
         fun show(
             act: FragmentActivity,
             takenPhotos: List<Uri>,
             onReceiveDeletedPhotoIndex: (Int) -> Unit,
+            onDialogResumed: () -> Unit,
             onDialogDismissed: () -> Unit
         ) {
+            mOnDialogResumed = onDialogResumed
             val dialog = ReviewTakenPhotosDialog()
             dialog.arguments = bundleOf(EXTRA_PHOTOS to takenPhotos)
             dialog.show(act.supportFragmentManager, ReviewTakenPhotosDialog::class.simpleName)

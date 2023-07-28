@@ -196,9 +196,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 onReceiveDeletedPhotoIndex = { removedItemIndex ->
                     viewModel.deletePhoto(removedItemIndex)
                 },
-                onDialogDismissed = {
-                    viewModel.enableImageAnalysisUseCase()
-                })
+                onDialogResumed = { viewModel.disableImageAnalysisUseCase() },
+                onDialogDismissed = { viewModel.enableImageAnalysisUseCase() })
         }
     }
 
@@ -284,9 +283,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                     takenPhotosAdapter.imageUris,
                     onReceiveDeletedPhotoIndex = { removedItemIndex ->
                         viewModel.deletePhoto(removedItemIndex)
-                    }, onDialogDismissed = {
-                        viewModel.enableImageAnalysisUseCase()
-                    }
+                    },
+                    onDialogResumed = { viewModel.disableImageAnalysisUseCase() },
+                    onDialogDismissed = { viewModel.enableImageAnalysisUseCase() }
                 )
                 return@setOnTouchListener true
             }
