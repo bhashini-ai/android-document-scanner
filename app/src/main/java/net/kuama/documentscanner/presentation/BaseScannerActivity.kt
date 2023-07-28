@@ -146,6 +146,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         updateDialog()
         orientationEventListener.enable()
         viewModel.clearCorners()
+        viewModel.clearFlashStatus()
         binding.previewOverlay.hide()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
     }

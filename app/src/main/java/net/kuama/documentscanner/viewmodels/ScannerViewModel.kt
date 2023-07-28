@@ -198,6 +198,10 @@ class ScannerViewModel : ViewModel() {
         corners.value = null
     }
 
+    fun clearFlashStatus(){
+        flashStatus.value = EFlashStatus.OFF
+    }
+
     fun onClosePreview() {
         _takenPhotos.value.forEach { uri ->
             uri.delete()
