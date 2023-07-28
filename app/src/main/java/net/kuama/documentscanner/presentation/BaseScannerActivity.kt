@@ -143,11 +143,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        updateDialog()
         orientationEventListener.enable()
-        viewModel.clearCorners()
-        viewModel.clearFlashStatus()
-        binding.previewOverlay.hide()
+        performCleanUp()
         viewModel.onViewCreated(OpenCVLoader(this), this, binding.viewFinder)
     }
 
@@ -210,6 +207,12 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
     }
 
+    private fun performCleanUp(){
+        updateDialog()
+        binding.previewOverlay.hide()
+        viewModel.clearCorners()
+        viewModel.clearFlashStatus()
+    }
     private fun setFullscreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             this.window.attributes.layoutInDisplayCutoutMode =
