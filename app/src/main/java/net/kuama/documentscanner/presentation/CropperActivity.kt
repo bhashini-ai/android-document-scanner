@@ -62,6 +62,7 @@ class CropperActivity : AppCompatActivity() {
                     height = binding.cropPreview.measuredHeight,
                     width = binding.cropPreview.measuredWidth
                 )
+                binding.cropHud.updateRect()
             }
         }
 
@@ -154,6 +155,7 @@ class CropperActivity : AppCompatActivity() {
     }
 
     private fun setOnCropPreviewTouched() {
+
         binding.cropPreview.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             view.performClick()
             binding.cropHud.onTouch(motionEvent)
