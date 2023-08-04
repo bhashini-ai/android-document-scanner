@@ -307,7 +307,8 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                     bitmapsList.add(bitmap)
                     uri.delete()
                 }
-                outputDirectory().delete()
+               val successfullyDeletedFolder = outputDirectory().deleteRecursively()
+                toast("successfullyDeletedFolder : $successfullyDeletedFolder")
                 // for normal ordering of the pages, otherwise the pages are reversed
                 bitmapsList.reverse()
                 withContext(Dispatchers.IO) {
@@ -389,7 +390,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     private fun onClosePreview() {
         binding.rootView.visibility = View.GONE
         viewModel.onClosePreview()
-        this.outputDirectory().delete()
+//        this.outputDirectory().deleteRecursively()
+        val successfullyDeletedFolder = outputDirectory().deleteRecursively()
+        toast("successfullyDeletedFolder : $successfullyDeletedFolder")
         orientationEventListener.disable()
         finish()
     }
