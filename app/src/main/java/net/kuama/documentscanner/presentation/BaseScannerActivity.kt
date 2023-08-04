@@ -207,12 +207,13 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun performCleanUp(){
+    private fun performCleanUp() {
         updateDialog()
         binding.previewOverlay.hide()
         viewModel.clearCorners()
         viewModel.clearFlashStatus()
     }
+
     private fun setFullscreen() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             this.window.attributes.layoutInDisplayCutoutMode =
@@ -307,8 +308,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                     bitmapsList.add(bitmap)
                     uri.delete()
                 }
-               val successfullyDeletedFolder = outputDirectory().deleteRecursively()
-                toast("successfullyDeletedFolder : $successfullyDeletedFolder")
+                outputDirectory().deleteRecursively()
                 // for normal ordering of the pages, otherwise the pages are reversed
                 bitmapsList.reverse()
                 withContext(Dispatchers.IO) {
@@ -390,9 +390,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     private fun onClosePreview() {
         binding.rootView.visibility = View.GONE
         viewModel.onClosePreview()
-//        this.outputDirectory().deleteRecursively()
-        val successfullyDeletedFolder = outputDirectory().deleteRecursively()
-        toast("successfullyDeletedFolder : $successfullyDeletedFolder")
+        outputDirectory().deleteRecursively()
         orientationEventListener.disable()
         finish()
     }
