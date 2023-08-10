@@ -18,8 +18,10 @@ import androidx.core.net.toUri
 import androidx.core.view.doOnNextLayout
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.databinding.ActivityCropperBinding
+import net.kuama.documentscanner.exceptions.MissingCornersException
 import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.loadBitmapFromView
+import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.extensions.show
 import net.kuama.documentscanner.extensions.toByteArray
@@ -57,18 +59,40 @@ class CropperActivity : AppCompatActivity() {
 
             // Wait for bitmap to be loaded on view, then draw corners
             binding.cropWrap.doOnNextLayout {
-                binding.cropHud.onCorners(
-                    corners = cropModel.corners.value ?: error("invalid Corners"),
-                    height = binding.cropPreview.measuredHeight,
-                    width = binding.cropPreview.measuredWidth
-                )
-                binding.cropHud.updateRect()
+                val resultingCorners = cropModel.corners.value
+                logError("result corners", "$resultingCorners")
+                if (resultingCorners == null) {
+                    finish()
+                    cropModel.errors.value = MissingCornersException()
+                } else {
+                    binding.cropHud.onCorners(
+                        corners = cropModel.corners.value ?: error("invalid Corners"),
+                        height = binding.cropPreview.measuredHeight,
+                        width = binding.cropPreview.measuredWidth
+                    )
+                    binding.cropHud.updateRect()
+                }
+
             }
         }
 
-        cropModel.errors.observe(this) {
-            Toast.makeText(this, this.resources.getText(R.string.crop_error), Toast.LENGTH_SHORT)
-                .show()
+        cropModel.errors.observe(this) { error ->
+            when (error) {
+                is MissingCornersException -> {
+                    finish()
+                    Toast.makeText(this, "Corners not detected", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else -> {
+                    logError("croperror", "${error.message}")
+                    Toast.makeText(
+                        this,
+                        this.resources.getText(R.string.crop_error),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
         }
 
         cropModel.bitmapToCrop.observe(this) {
