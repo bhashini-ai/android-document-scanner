@@ -25,6 +25,7 @@ import net.kuama.documentscanner.extensions.logError
 import net.kuama.documentscanner.extensions.outputDirectory
 import net.kuama.documentscanner.extensions.show
 import net.kuama.documentscanner.extensions.toByteArray
+import net.kuama.documentscanner.utils.PointUtils.arePointsOverlapping
 import net.kuama.documentscanner.viewmodels.CropperViewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -60,19 +61,34 @@ class CropperActivity : AppCompatActivity() {
             // Wait for bitmap to be loaded on view, then draw corners
             binding.cropWrap.doOnNextLayout {
                 val resultingCorners = cropModel.corners.value
-                logError("result corners", "$resultingCorners")
+
                 if (resultingCorners == null) {
                     finish()
                     cropModel.errors.value = MissingCornersException()
                 } else {
+                    val point1 = resultingCorners.topLeft
+                    val point2 = resultingCorners.topRight
+                    val point3 = resultingCorners.bottomLeft
+                    val point4 = resultingCorners.bottomRight
+
+                    if (arePointsOverlapping(point1, point2) ||
+                        arePointsOverlapping(point1, point3) ||
+                        arePointsOverlapping(point1, point4) ||
+                        arePointsOverlapping(point2, point3) ||
+                        arePointsOverlapping(point2, point4) ||
+                        arePointsOverlapping(point3, point4)
+                    ) {
+                        finish()
+                        cropModel.errors.value = MissingCornersException()
+                    }
+
                     binding.cropHud.onCorners(
-                        corners = cropModel.corners.value ?: error("invalid Corners"),
+                        corners = resultingCorners,
                         height = binding.cropPreview.measuredHeight,
                         width = binding.cropPreview.measuredWidth
                     )
                     binding.cropHud.updateRect()
                 }
-
             }
         }
 
@@ -85,12 +101,16 @@ class CropperActivity : AppCompatActivity() {
                 }
                 else -> {
                     logError("croperror", "${error.message}")
-                    Toast.makeText(
-                        this,
-                        this.resources.getText(R.string.crop_error),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+
+                    // The original file is deleted but we don't need it
+                    if (!error.message.toString().endsWith("(No such file or directory)")) {
+                        Toast.makeText(
+                            this,
+                            this.resources.getText(R.string.crop_error),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
                 }
             }
         }
