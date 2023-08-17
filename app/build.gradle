@@ -9,6 +9,7 @@ apply from: '../jacoco/modules.gradle'
 android {
     compileSdkVersion 33
     buildToolsVersion "30.0.3"
+    resourcePrefix = "ds_"
 
     defaultConfig {
 

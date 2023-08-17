@@ -17,6 +17,6 @@ class ContextExtensionInstrumentedTest {
 
         val outputDir = context.outputDirectory()
 
-        assertEquals(outputDir.name, context.resources.getString(R.string.app_name))
+        assertEquals(outputDir.name, context.resources.getString(R.string.ds_app_name))
     }
 }

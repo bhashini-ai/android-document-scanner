@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.OpenCVLoader
-import net.kuama.documentscanner.databinding.ActivityScannerBinding
+import net.kuama.documentscanner.databinding.DsActivityScannerBinding
 import net.kuama.documentscanner.enums.EFlashStatus
 import net.kuama.documentscanner.extensions.delete
 import net.kuama.documentscanner.extensions.hide
@@ -55,7 +55,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     lateinit var viewModel: ScannerViewModel
-    private lateinit var binding: ActivityScannerBinding
+    private lateinit var binding: DsActivityScannerBinding
     private val takenPhotosAdapter = StackViewAdapter()
 
     private val resultLauncher =
@@ -90,7 +90,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityScannerBinding.inflate(layoutInflater)
+        binding = DsActivityScannerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val viewModel: ScannerViewModel by viewModels()
 
@@ -122,9 +122,9 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         viewModel.flashStatus.observe(this) { status ->
             binding.flashMode.setImageResource(
                 when (status) {
-                    EFlashStatus.ON -> R.drawable.flash_on
-                    EFlashStatus.OFF -> R.drawable.flash_off
-                    else -> R.drawable.flash_off
+                    EFlashStatus.ON -> R.drawable.ds_flash_on
+                    EFlashStatus.OFF -> R.drawable.ds_flash_off
+                    else -> R.drawable.ds_flash_off
                 }
             )
         }
@@ -173,7 +173,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
                 cameraElementsWrapper.setBackgroundColor(
                     ContextCompat.getColor(
                         this@BaseScannerActivity,
-                        R.color.darkGray
+                        R.color.ds_darkGray
                     )
                 )
                 done.show()
@@ -349,7 +349,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
     }
 
     private fun convertBitmapsToPdf(bitmaps: List<Bitmap>) {
-        val date = SimpleDateFormat(this.getString(R.string.file_name_format), Locale.GERMANY)
+        val date = SimpleDateFormat(this.getString(R.string.ds_file_name_format), Locale.GERMANY)
             .format(System.currentTimeMillis())
         val outputPath = applicationContext.cacheDir.absolutePath + "/ScannedDocument-$date.pdf"
         val document = PdfDocument()

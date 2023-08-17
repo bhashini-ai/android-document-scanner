@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color> <!-- Blue 500 -->
-    <color name="colorPrimaryDark">#1976D2</color> <!-- Blue 700 -->
-    <color name="colorAccent">#FFAB40</color> <!-- Orange A200 -->
+    <color name="ds_colorPrimary">#2196F3</color> <!-- Blue 500 -->
+    <color name="ds_colorPrimaryDark">#1976D2</color> <!-- Blue 700 -->
+    <color name="ds_colorAccent">#FFAB40</color> <!-- Orange A200 -->
 
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <color name="ds_white">#FFFFFF</color>
+    <color name="ds_black">#000000</color>
 
-    <color name="darkGray">#222</color>
-    <color name="lightGray">#878787</color>
+    <color name="ds_darkGray">#222</color>
+    <color name="ds_lightGray">#878787</color>
 </resources>

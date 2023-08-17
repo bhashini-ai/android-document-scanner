@@ -102,7 +102,7 @@ class ScannerViewModel : ViewModel() {
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
-                context.getString(R.string.file_name_format), Locale.GERMANY
+                context.getString(R.string.ds_file_name_format), Locale.GERMANY
             ).format(System.currentTimeMillis()) + ".jpg"
         )
         // Create output options object which contains file + metadata

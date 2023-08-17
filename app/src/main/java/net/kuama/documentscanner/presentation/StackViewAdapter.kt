@@ -1,6 +1,6 @@
 package net.kuama.documentscanner.presentation
 
-import net.kuama.documentscanner.databinding.ListItemTakenPhotoBinding
+import net.kuama.documentscanner.databinding.DsListItemTakenPhotoBinding
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ class StackViewAdapter : RecyclerView.Adapter<StackViewAdapter.VH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ListItemTakenPhotoBinding.inflate(inflater, parent, false)
+        val binding = DsListItemTakenPhotoBinding.inflate(inflater, parent, false)
         return VH(binding)
     }
 
@@ -33,7 +33,7 @@ class StackViewAdapter : RecyclerView.Adapter<StackViewAdapter.VH>() {
         notifyDataSetChanged()
     }
 
-    inner class VH(private val binding: ListItemTakenPhotoBinding) :
+    inner class VH(private val binding: DsListItemTakenPhotoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(uri: Uri) {

@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.doOnNextLayout
 import net.kuama.documentscanner.R
-import net.kuama.documentscanner.databinding.ActivityCropperBinding
+import net.kuama.documentscanner.databinding.DsActivityCropperBinding
 import net.kuama.documentscanner.exceptions.MissingCornersException
 import net.kuama.documentscanner.extensions.hide
 import net.kuama.documentscanner.extensions.loadBitmapFromView
@@ -37,11 +37,11 @@ class CropperActivity : AppCompatActivity() {
     private lateinit var cropModel: CropperViewModel
     private lateinit var bitmapUri: Uri
     private var screenOrientationDeg: Int = 0
-    private lateinit var binding: ActivityCropperBinding
+    private lateinit var binding: DsActivityCropperBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCropperBinding.inflate(layoutInflater)
+        binding = DsActivityCropperBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val extras = intent.extras
@@ -106,7 +106,7 @@ class CropperActivity : AppCompatActivity() {
                     if (!error.message.toString().endsWith("(No such file or directory)")) {
                         Toast.makeText(
                             this,
-                            this.resources.getText(R.string.crop_error),
+                            this.resources.getText(R.string.ds_crop_error),
                             Toast.LENGTH_SHORT
                         )
                             .show()

@@ -13,8 +13,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.RecyclerView
 import net.kuama.documentscanner.R
-import net.kuama.documentscanner.databinding.DialogReviewPhotosBinding
-import net.kuama.documentscanner.databinding.ListItemReviewedPhotoBinding
+import net.kuama.documentscanner.databinding.DsDialogReviewPhotosBinding
+import net.kuama.documentscanner.databinding.DsListItemReviewedPhotoBinding
 import net.kuama.documentscanner.extensions.loadImageUri
 
 class ReviewTakenPhotosDialog : DialogFragment() {
@@ -40,11 +40,11 @@ class ReviewTakenPhotosDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): AlertDialog {
-        val binding = DialogReviewPhotosBinding.inflate(layoutInflater, null, false)
+        val binding = DsDialogReviewPhotosBinding.inflate(layoutInflater, null, false)
         return AlertDialog.Builder(requireContext())
-            .setTitle(requireContext().getString(R.string.reviewPhotosDialogTitle))
+            .setTitle(requireContext().getString(R.string.ds_reviewPhotosDialogTitle))
             .setView(binding.root)
-            .setNegativeButton(requireContext().getString(R.string.close)) { dialog, _ -> dialog?.dismiss() }
+            .setNegativeButton(requireContext().getString(R.string.ds_close)) { dialog, _ -> dialog?.dismiss() }
             .create().also {
                 isCancelable = false
                 it.setOnShowListener {
@@ -99,7 +99,7 @@ class ReviewTakenPhotosDialog : DialogFragment() {
         val items = data.toMutableList()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            val binding = ListItemReviewedPhotoBinding.inflate(inflater, parent, false)
+            val binding = DsListItemReviewedPhotoBinding.inflate(inflater, parent, false)
             return ViewHolder(binding)
         }
 
@@ -124,7 +124,7 @@ class ReviewTakenPhotosDialog : DialogFragment() {
         }
     }
 
-    class ViewHolder(private val binding: ListItemReviewedPhotoBinding) :
+    class ViewHolder(private val binding: DsListItemReviewedPhotoBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(imageItem: Uri, onRemoveClicked: (Uri) -> Unit) {
             with(binding) {

@@ -17,6 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:itemCount="3"
-        tools:listitem="@layout/list_item_reviewed_photo" />
+        tools:listitem="@layout/ds_list_item_reviewed_photo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

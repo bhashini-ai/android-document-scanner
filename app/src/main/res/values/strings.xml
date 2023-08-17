@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">Scanner</string>
-    <string name="toggle_flash">Toggle flash</string>
-    <string name="null_corners">No document found</string>
-    <string name="confirm_document">Confirm document</string>
-    <string name="close_document_preview">Close document preview</string>
-    <string name="take_picture">Take picture</string>
-    <string name="crop_error">Error while cropping the document</string>
+    <string name="ds_app_name">Scanner</string>
+    <string name="ds_toggle_flash">Toggle flash</string>
+    <string name="ds_null_corners">No document found</string>
+    <string name="ds_confirm_document">Confirm document</string>
+    <string name="ds_close_document_preview">Close document preview</string>
+    <string name="ds_take_picture">Take picture</string>
+    <string name="ds_crop_error">Error while cropping the document</string>
 
-    <string name="reviewPhotosDialogTitle">Review photos</string>
-    <string name="close">Close</string>
+    <string name="ds_reviewPhotosDialogTitle">Review photos</string>
+    <string name="ds_close">Close</string>
 
-    <string name="file_name_format">yyyy-MM-dd-HH-mm-ss-SSS"</string>
+    <string name="ds_file_name_format">yyyy-MM-dd-HH-mm-ss-SSS"</string>
 </resources>

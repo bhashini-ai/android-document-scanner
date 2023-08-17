@@ -9,7 +9,7 @@ open class ScannerActivity : BaseScannerActivity() {
         when (throwable) {
             is MissingSquareException -> Toast.makeText(
                 this,
-                R.string.null_corners, Toast.LENGTH_LONG
+                R.string.ds_null_corners, Toast.LENGTH_LONG
             ).show()
             else -> Toast.makeText(this, throwable.message, Toast.LENGTH_LONG).show()
         }

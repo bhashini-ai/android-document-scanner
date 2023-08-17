@@ -5,14 +5,14 @@
     android:id="@+id/crop_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/ds_black">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cropWrap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="@color/ds_black"
         android:visibility="gone">
 
         <com.github.chrisbanes.photoview.PhotoView
@@ -26,18 +26,18 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="32dp"
-            android:contentDescription="@string/close_document_preview"
+            android:contentDescription="@string/ds_close_document_preview"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/close" />
+            app:srcCompat="@drawable/ds_close" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/confirmCropPreview"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
-            android:contentDescription="@string/confirm_document"
-            android:src="@drawable/check"
+            android:contentDescription="@string/ds_confirm_document"
+            android:src="@drawable/ds_check"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -47,7 +47,7 @@
         android:id="@+id/cropResultWrap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="@color/ds_black"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -62,18 +62,18 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="32dp"
-            android:contentDescription="@string/close_document_preview"
+            android:contentDescription="@string/ds_close_document_preview"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/close" />
+            app:srcCompat="@drawable/ds_close" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/confirmCropResult"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
-            android:contentDescription="@string/confirm_document"
-            android:src="@drawable/check"
+            android:contentDescription="@string/ds_confirm_document"
+            android:src="@drawable/ds_check"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

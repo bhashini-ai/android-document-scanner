@@ -4,7 +4,7 @@
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/ds_black">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
@@ -40,18 +40,18 @@
         android:layout_margin="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/close" />
+        app:srcCompat="@drawable/ds_close" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/flashMode"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_margin="32dp"
-        android:contentDescription="@string/toggle_flash"
+        android:contentDescription="@string/ds_toggle_flash"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/flash_off"
-        app:tint="@color/white" />
+        app:srcCompat="@drawable/ds_flash_off"
+        app:tint="@color/ds_white" />
 
     <FrameLayout
         android:elevation="2dp"
@@ -71,7 +71,7 @@
             android:layout_gravity="start|center_vertical"
             android:clipToPadding="false"
             android:padding="10dp"
-            tools:listitem="@layout/list_item_taken_photo" />
+            tools:listitem="@layout/ds_list_item_taken_photo" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/takePicture"
@@ -80,9 +80,9 @@
             android:layout_gravity="center|center_vertical"
             android:layout_marginHorizontal="32dp"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/take_picture"
-            android:src="@drawable/twotone_circle"
-            android:tint="@color/white" />
+            android:contentDescription="@string/ds_take_picture"
+            android:src="@drawable/ds_twotone_circle"
+            android:tint="@color/ds_white" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/done"
@@ -90,7 +90,7 @@
             android:layout_height="48dp"
             android:layout_gravity="end|center_vertical"
             android:layout_marginHorizontal="8dp"
-            android:src="@drawable/check" />
+            android:src="@drawable/ds_check" />
     </FrameLayout>
 
     <ProgressBar
