@@ -3,12 +3,9 @@
     package="net.kuama.documentscanner">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera.front" />
-    <uses-feature android:name="android.hardware.camera.front.autofocus" />
-    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".presentation.ScannerApplication"
@@ -25,7 +22,7 @@
             android:name=".presentation.CropperActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/DsTheme.AppCompat.Light.NoActionBar.FullScreen"/>
+            android:theme="@style/DsTheme.AppCompat.Light.NoActionBar.FullScreen" />
     </application>
 
 </manifest>
