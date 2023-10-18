@@ -1,18 +1,14 @@
 <resources>
-    <string name="app_name">Scanner</string>
-    <string name="toggle_flash">Toggle flash</string>
-    <string name="null_corners">No document found</string>
-    <string name="confirm_document">Confirm document</string>
-    <string name="close_document_preview">Close document preview</string>
-    <string name="take_picture">Take picture</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="crop_error">Error while cropping the document</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="ds_app_name">Scanner</string>
+    <string name="ds_toggle_flash">Toggle flash</string>
+    <string name="ds_null_corners">No document found</string>
+    <string name="ds_confirm_document">Confirm document</string>
+    <string name="ds_close_document_preview">Close document preview</string>
+    <string name="ds_take_picture">Take picture</string>
+    <string name="ds_crop_error">Error while cropping the document</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="ds_reviewPhotosDialogTitle">Review photos</string>
+    <string name="ds_close">Close</string>
+
+    <string name="ds_file_name_format">yyyy-MM-dd-HH-mm-ss-SSS"</string>
 </resources>

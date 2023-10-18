@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/crop_root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ds_black">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cropWrap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/ds_black"
+        android:visibility="gone">
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/cropPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/closeCropPreview" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/closeCropPreview"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="32dp"
+            android:contentDescription="@string/ds_close_document_preview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ds_close" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/confirmCropPreview"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/ds_confirm_document"
+            android:src="@drawable/ds_check"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cropResultWrap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/ds_black"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/cropResultPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/closeResultPreview" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/closeResultPreview"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="32dp"
+            android:contentDescription="@string/ds_close_document_preview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ds_close" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/confirmCropResult"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/ds_confirm_document"
+            android:src="@drawable/ds_check"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <net.kuama.documentscanner.presentation.PaperRectangle
+        android:id="@+id/cropHud"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:paddingStart="0dp"
+        android:paddingBottom="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

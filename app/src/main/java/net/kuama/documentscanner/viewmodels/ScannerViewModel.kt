@@ -1,6 +1,5 @@
 package net.kuama.documentscanner.viewmodels
 
-import net.kuama.documentscanner.enums.EOpenCvStatus
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -19,58 +18,56 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
 import net.kuama.documentscanner.enums.EFlashStatus
+import net.kuama.documentscanner.enums.EOpenCvStatus
+import net.kuama.documentscanner.extensions.delete
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
 
-private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-
 class ScannerViewModel : ViewModel() {
     private lateinit var controller: LifecycleCameraController
 
-    /**
-     * Observable data
-     */
-    val isBusy = MutableLiveData<Boolean>()
+    val isLoading = MutableLiveData<Boolean>()
     private val openCv = MutableLiveData<EOpenCvStatus>()
     val corners = MutableLiveData<Corners?>()
     val errors = MutableLiveData<Throwable>()
     val flashStatus = MutableLiveData<EFlashStatus>()
     var lastUri = MutableLiveData<Uri>()
+    private val _takenPhotos = MutableStateFlow<List<Uri>>(emptyList())
+    var takenPhotos = _takenPhotos.asLiveData()
     val screenOrientationDeg = MutableLiveData<Int>()
 
     private var didLoadOpenCv = false
 
-    /**
-     * Use cases
-     */
     private val findPaperSheetUseCase: FindPaperSheetContours = FindPaperSheetContours()
 
-    /**
-     * Tries to load OpenCv native libraries
-     */
+    /*** Tries to load OpenCv native libraries */
     fun onViewCreated(
         openCVLoader: OpenCVLoader,
         scannerActivity: AppCompatActivity,
         viewFinder: PreviewView
     ) {
-        isBusy.value = true
+        isLoading.value = true
         setupCamera(scannerActivity, viewFinder) {
             if (!didLoadOpenCv) {
                 openCVLoader.load {
-                    isBusy.value = false
+                    isLoading.value = false
                     openCv.value = it
                     didLoadOpenCv = true
                 }
             } else {
-                isBusy.value = false
+                isLoading.value = false
             }
         }
     }
@@ -94,12 +91,18 @@ class ScannerViewModel : ViewModel() {
         }
     }
 
-    fun onTakePicture(outputDirectory: File, context: Context) {
-        isBusy.value = true
+    fun onTakePicture(
+        outputDirectory: File,
+        context: Context,
+        viewFinder: PreviewView,
+        actionShow: (Bitmap) -> Unit
+    ) {
+        isLoading.value = true
+        stopImageAnalysis()
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
-                FILENAME_FORMAT, Locale.US
+                context.getString(R.string.ds_file_name_format), Locale.GERMANY
             ).format(System.currentTimeMillis()) + ".jpg"
         )
         // Create output options object which contains file + metadata
@@ -113,9 +116,10 @@ class ScannerViewModel : ViewModel() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    lastUri.value = Uri.fromFile(photoFile)
+                    lastUri.value = output.savedUri
                 }
             })
+        viewFinder.bitmap?.let { actionShow.invoke(it) }
     }
 
     @SuppressLint("RestrictedApi", "UnsafeExperimentalUsageError")
@@ -124,7 +128,7 @@ class ScannerViewModel : ViewModel() {
         viewFinder: PreviewView,
         then: () -> Unit
     ) {
-        isBusy.value = true
+        isLoading.value = true
 
         val executor: Executor = ContextCompat.getMainExecutor(lifecycleOwner)
         controller = LifecycleCameraController(lifecycleOwner)
@@ -175,16 +179,52 @@ class ScannerViewModel : ViewModel() {
         }
     }
 
+    /** By only clearing the ImageAnalysisAnalyzer and not disabling the IMAGE_ANALYSIS use case,
+     *  we keep the outlines of the document shown */
+    private fun stopImageAnalysis() {
+        controller.clearImageAnalysisAnalyzer()
+    }
+
+    fun disableImageAnalysisUseCase() {
+        controller.setEnabledUseCases(IMAGE_CAPTURE)
+        clearCorners()
+    }
+
+    fun enableImageAnalysisUseCase() {
+        controller.setEnabledUseCases(IMAGE_CAPTURE or IMAGE_ANALYSIS)
+    }
+
+    fun clearCorners() {
+        corners.value = null
+    }
+
+    fun clearFlashStatus(){
+        flashStatus.value = EFlashStatus.OFF
+    }
+
     fun onClosePreview() {
-        lastUri.value?.let {
-            val file = File(it.path!!)
-            if (file.exists()) {
-                file.delete()
-            }
+        _takenPhotos.value.forEach { uri ->
+            uri.delete()
         }
     }
 
     fun onScreenOrientationDegChange(orientationDeg: Int) {
         screenOrientationDeg.value = orientationDeg
+    }
+
+    fun savePhoto(uri: Uri) {
+        _takenPhotos.update {
+            listOf(uri) + it
+        }
+    }
+
+    fun deletePhoto(index: Int) {
+        _takenPhotos.update { photos ->
+            val updatedPhotos = photos.toMutableList()
+            updatedPhotos.apply {
+                removeAt(index).also { removedPhoto -> removedPhoto.delete() }
+            }
+            updatedPhotos
+        }
     }
 }

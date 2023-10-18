@@ -5,6 +5,7 @@ import org.opencv.core.Point
 import org.opencv.core.Size
 import java.util.*
 import kotlin.Comparator
+import kotlin.math.abs
 
 object PointUtils {
     fun getSortedCorners(cornersList: List<Point>, originalSize: Size): Corners {
@@ -24,5 +25,11 @@ object PointUtils {
             bottomLeft = Collections.min(cornersList, sumComparator),
             size = originalSize
         )
+    }
+
+    fun arePointsOverlapping(point1: Point, point2: Point, threshold: Float = 5.0F): Boolean {
+        val distanceX = abs(point1.x - point2.x)
+        val distanceY = abs(point1.y - point2.y)
+        return distanceX <= threshold && distanceY <= threshold
     }
 }
