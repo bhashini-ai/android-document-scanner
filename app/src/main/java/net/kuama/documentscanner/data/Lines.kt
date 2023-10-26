@@ -8,7 +8,8 @@ import kotlin.math.sin
 
 data class Lines(
     val lines: List<Line>,
-    val size: Size
+    val size: Size,
+    val intersections: Set<Point>
 )
 
 data class Line(
@@ -79,4 +80,9 @@ data class Line(
         return closestLine
     }
 
+    fun findIntersectionCords(line2: Line): Point {
+        val y = (rho * line2.cosTheta - line2.rho * cosTheta) / (sinTheta * line2.cosTheta - cosTheta * line2.sinTheta)
+        val x = getX(y)
+        return Point(x, y)
+    }
 }

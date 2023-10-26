@@ -44,6 +44,7 @@ class PaperRectangle : View {
 
     // points (startX, startY, stopX, stopY) specifying various lines to be drawn
     private val linePoints = mutableListOf<Float>()
+    private val intersectionPoints = mutableSetOf<Point>()
 
     // Variables for tracking touch events and moving points
     private var point2Move = Point()
@@ -160,11 +161,14 @@ class PaperRectangle : View {
             linePoints.add(endPoint.x.div(ratioX).toFloat())
             linePoints.add(endPoint.y.div(ratioY).toFloat())
         }
+        intersectionPoints.clear()
+        intersectionPoints.addAll(lines.intersections)
         invalidate()
     }
 
     fun onLinesNotDetected() {
         linePoints.clear()
+        intersectionPoints.clear()
         invalidate()
     }
 
@@ -180,7 +184,10 @@ class PaperRectangle : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if (linePoints.size > 0) {
-           canvas?.drawLines(linePoints.toFloatArray(), rectPaint)
+            canvas?.drawLines(linePoints.toFloatArray(), rectPaint)
+        }
+        for (p in intersectionPoints) {
+            canvas?.drawCircle(p.x.toFloat(), p.y.toFloat(), 40F, extCirclePaint)
         }
         canvas?.drawPath(path, fillPaint)
         canvas?.drawPath(path, rectPaint)
