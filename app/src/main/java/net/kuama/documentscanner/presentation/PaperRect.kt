@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import net.kuama.documentscanner.data.Corners
+import net.kuama.documentscanner.data.Lines
 import org.opencv.core.Point
 import kotlin.math.abs
 
@@ -40,6 +41,9 @@ class PaperRectangle : View {
 
     // Path object to define the rectangle shape
     private val path: Path = Path()
+
+    // points (startX, startY, stopX, stopY) specifying various lines to be drawn
+    private val linePoints = mutableListOf<Float>()
 
     // Variables for tracking touch events and moving points
     private var point2Move = Point()
@@ -140,6 +144,31 @@ class PaperRectangle : View {
     }
 
     /**
+     * Method to show various lines that are detected after the Hough Transform on Canny Edges
+     * @param lines The points (startX, startY, stopX, stopY) of detected lines
+     */
+    fun onLinesDetected(lines: Lines) {
+        ratioX = lines.size.width.div(measuredWidth)
+        ratioY = lines.size.height.div(measuredHeight)
+        linePoints.clear()
+        for (i in lines.lines.indices) {
+            val line = lines.lines[i]
+            val startPoint = line.extremePoints[0]
+            val endPoint = line.extremePoints[1]
+            linePoints.add(startPoint.x.div(ratioX).toFloat())
+            linePoints.add(startPoint.y.div(ratioY).toFloat())
+            linePoints.add(endPoint.x.div(ratioX).toFloat())
+            linePoints.add(endPoint.y.div(ratioY).toFloat())
+        }
+        invalidate()
+    }
+
+    fun onLinesNotDetected() {
+        linePoints.clear()
+        invalidate()
+    }
+
+    /**
      * Method to reset the view when corners are not detected
      */
     fun onCornersNotDetected() {
@@ -150,6 +179,9 @@ class PaperRectangle : View {
     // Override onDraw method to draw the rectangle and circles
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        if (linePoints.size > 0) {
+           canvas?.drawLines(linePoints.toFloatArray(), rectPaint)
+        }
         canvas?.drawPath(path, fillPaint)
         canvas?.drawPath(path, rectPaint)
 

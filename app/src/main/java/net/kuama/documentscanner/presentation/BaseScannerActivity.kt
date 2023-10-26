@@ -119,6 +119,14 @@ abstract class BaseScannerActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.lines.observe(this) {
+            it?.let { lines ->
+                binding.hud.onLinesDetected(lines)
+            } ?: run {
+                binding.hud.onLinesNotDetected()
+            }
+        }
+
         viewModel.flashStatus.observe(this) { status ->
             binding.flashMode.setImageResource(
                 when (status) {
@@ -211,6 +219,7 @@ abstract class BaseScannerActivity : AppCompatActivity() {
         updateDialog()
         binding.previewOverlay.hide()
         viewModel.clearCorners()
+        viewModel.clearLines()
         viewModel.clearFlashStatus()
     }
 

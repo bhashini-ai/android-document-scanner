@@ -25,8 +25,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.kuama.documentscanner.R
 import net.kuama.documentscanner.data.Corners
+import net.kuama.documentscanner.data.Lines
 import net.kuama.documentscanner.data.OpenCVLoader
 import net.kuama.documentscanner.domain.FindPaperSheetContours
+import net.kuama.documentscanner.domain.FindQuadrilaterals
 import net.kuama.documentscanner.enums.EFlashStatus
 import net.kuama.documentscanner.enums.EOpenCvStatus
 import net.kuama.documentscanner.extensions.delete
@@ -41,6 +43,7 @@ class ScannerViewModel : ViewModel() {
     val isLoading = MutableLiveData<Boolean>()
     private val openCv = MutableLiveData<EOpenCvStatus>()
     val corners = MutableLiveData<Corners?>()
+    val lines = MutableLiveData<Lines?>()
     val errors = MutableLiveData<Throwable>()
     val flashStatus = MutableLiveData<EFlashStatus>()
     var lastUri = MutableLiveData<Uri>()
@@ -50,7 +53,9 @@ class ScannerViewModel : ViewModel() {
 
     private var didLoadOpenCv = false
 
+    private val useNewAlgorithm = true
     private val findPaperSheetUseCase: FindPaperSheetContours = FindPaperSheetContours()
+    private val findQuadrilateralsUseCase: FindQuadrilaterals = FindQuadrilaterals()
 
     /*** Tries to load OpenCv native libraries */
     fun onViewCreated(
@@ -143,6 +148,7 @@ class ScannerViewModel : ViewModel() {
                 })
             } ?: run {
                 corners.value = null
+                lines.value = null
                 proxy.close()
             }
         }
@@ -172,9 +178,16 @@ class ScannerViewModel : ViewModel() {
         onSuccess: (() -> Unit)? = null
     ) {
         viewModelScope.launch {
-            findPaperSheetUseCase(FindPaperSheetContours.Params(bitmap)) { resultingCorners: Corners? ->
-                corners.value = resultingCorners
-                onSuccess?.invoke()
+            if (!useNewAlgorithm) {
+                findPaperSheetUseCase(FindPaperSheetContours.Params(bitmap)) { resultingCorners: Corners? ->
+                    corners.value = resultingCorners
+                    onSuccess?.invoke()
+                }
+            } else {
+                findQuadrilateralsUseCase(FindQuadrilaterals.Params(bitmap)) { resultingLines: Lines? ->
+                    lines.value = resultingLines
+                    onSuccess?.invoke()
+                }
             }
         }
     }
@@ -188,6 +201,7 @@ class ScannerViewModel : ViewModel() {
     fun disableImageAnalysisUseCase() {
         controller.setEnabledUseCases(IMAGE_CAPTURE)
         clearCorners()
+        clearLines()
     }
 
     fun enableImageAnalysisUseCase() {
@@ -196,6 +210,10 @@ class ScannerViewModel : ViewModel() {
 
     fun clearCorners() {
         corners.value = null
+    }
+
+    fun clearLines() {
+        lines.value = null
     }
 
     fun clearFlashStatus(){
