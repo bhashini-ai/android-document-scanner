@@ -5,6 +5,8 @@ import org.opencv.core.Point
 import org.opencv.core.Size
 import kotlin.math.abs
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -106,36 +108,23 @@ fun dist(p1: Point, p2: Point) = sqrt((p2.x - p1.x).pow(2) + (p2.y - p1.y).pow(2
 
 fun angle(line1: Line, line2: Line) = abs(line1.theta - line2.theta)
 
-data class Quadrilateral(
-    val topLeft: Point,
-    val topRight: Point,
-    val bottomRight: Point,
-    val bottomLeft: Point,
-    val topEdge: Line,
-    val rightEdge: Line,
-    val bottomEdge: Line,
-    val leftEdge: Line
-) {
-    var score: Double = 0.0
-    fun computeScore(cannyImg: Mat): Double {
-        score = 0.0
-        val size = cannyImg.size()
-        for (x in topLeft.x.toInt() .. topRight.x.toInt() ) {
-            val y = topEdge.getY(x.toDouble()).toInt()
-            if (withinBounds(x, y, size) && cannyImg.get(y, x)[0] > 0) score++
+fun countOnPixels(v1: LinesIntersection, v2: LinesIntersection, line: Line, cannyImg: Mat): Int {
+    var count = 0
+    val imgSize = cannyImg.size()
+    val xMin = min(v1.point.x, v2.point.x).toInt()
+    val xMax = max(v1.point.x, v2.point.x).toInt()
+    val yMin = min(v1.point.y, v2.point.y).toInt()
+    val yMax = max(v1.point.y, v2.point.y).toInt()
+    if (xMax - xMin > yMax - yMin) {
+        for (x in xMin..xMax) {
+            val y = line.getY(x.toDouble()).toInt()
+            if (withinBounds(x, y, imgSize) && cannyImg.get(y, x)[0] > 0) count++
         }
-        for (y in topRight.y.toInt() .. bottomRight.y.toInt() ) {
-            val x = rightEdge.getX(y.toDouble()).toInt()
-            if (withinBounds(x, y, size) && cannyImg.get(y, x)[0] > 0) score++
+    } else {
+        for (y in yMin..yMax) {
+            val x = line.getX(y.toDouble()).toInt()
+            if (withinBounds(x, y, imgSize) && cannyImg.get(y, x)[0] > 0) count++
         }
-        for (x in bottomLeft.x.toInt() .. bottomRight.x.toInt() ) {
-            val y = bottomEdge.getY(x.toDouble()).toInt()
-            if (withinBounds(x, y, size) && cannyImg.get(y, x)[0] > 0) score++
-        }
-        for (y in topLeft.y.toInt() .. bottomLeft.y.toInt() ) {
-            val x = leftEdge.getX(y.toDouble()).toInt()
-            if (withinBounds(x, y, size) && cannyImg.get(y, x)[0] > 0) score++
-        }
-        return score
     }
+    return count
 }
