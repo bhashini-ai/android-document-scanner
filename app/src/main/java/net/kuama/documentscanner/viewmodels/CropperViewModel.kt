@@ -10,6 +10,7 @@ import net.kuama.documentscanner.data.Corners
 import net.kuama.documentscanner.data.CornersFactory
 import net.kuama.documentscanner.support.Failure
 import net.kuama.documentscanner.domain.FindPaperSheetContours
+import net.kuama.documentscanner.domain.FindQuadrilaterals
 import net.kuama.documentscanner.domain.PerspectiveTransform
 import net.kuama.documentscanner.domain.UriToBitmap
 import net.kuama.documentscanner.extensions.delete
@@ -17,6 +18,7 @@ import net.kuama.documentscanner.extensions.delete
 class CropperViewModel : ViewModel() {
     private val perspectiveTransform: PerspectiveTransform = PerspectiveTransform()
     private val findPaperSheetUseCase: FindPaperSheetContours = FindPaperSheetContours()
+    private val findQuadrilateralsUseCase: FindQuadrilaterals = FindQuadrilaterals()
     private val uriToBitmap: UriToBitmap = UriToBitmap()
 
     val corners = MutableLiveData<Corners>()
@@ -68,8 +70,8 @@ class CropperViewModel : ViewModel() {
 
     private fun analyze(bitmap: Bitmap) {
         viewModelScope.launch {
-            findPaperSheetUseCase(
-                FindPaperSheetContours.Params(bitmap)
+            findQuadrilateralsUseCase(
+                FindQuadrilaterals.Params(bitmap)
             ) { foundCorners: Corners? ->
                 corners.value = foundCorners
             }

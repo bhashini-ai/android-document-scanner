@@ -184,8 +184,8 @@ class ScannerViewModel : ViewModel() {
                     onSuccess?.invoke()
                 }
             } else {
-                findQuadrilateralsUseCase(FindQuadrilaterals.Params(bitmap)) { resultingLines: Lines? ->
-                    lines.value = resultingLines
+                findQuadrilateralsUseCase(FindQuadrilaterals.Params(bitmap)) { resultingCorners: Corners? ->
+                    corners.value = resultingCorners
                     onSuccess?.invoke()
                 }
             }

@@ -162,7 +162,9 @@ class PaperRectangle : View {
             linePoints.add(endPoint.y.div(ratioY).toFloat())
         }
         intersectionPoints.clear()
-        intersectionPoints.addAll(lines.intersections)
+        for (intersection in lines.intersections) {
+            intersectionPoints.add(intersection.point)
+        }
         invalidate()
     }
 
