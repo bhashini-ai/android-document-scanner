@@ -163,7 +163,8 @@ class PaperRectangle : View {
         }
         intersectionPoints.clear()
         for (intersection in lines.intersections) {
-            intersectionPoints.add(intersection.point)
+            val p = intersection.point
+            intersectionPoints.add(Point(p.x.div(ratioX), p.y.div(ratioY)))
         }
         invalidate()
     }
