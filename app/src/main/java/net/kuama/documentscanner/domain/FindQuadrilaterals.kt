@@ -14,6 +14,8 @@ import org.opencv.imgproc.Imgproc
 import timber.log.Timber
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params>() {
 
@@ -36,20 +38,20 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
         Imgproc.Canny(modified, cannyImg, 100.0, 200.0, 5, false)
 
         val lines = Mat()
-        // val houghThreshold = (min(modified.size().width, modified.size().height) * 0.5 ).toInt()
-        val houghThreshold = 75
-        val groupSimilarThreshold = 45
-        val angleThreshold = PI/4.0
+        val houghThreshold = (min(modified.size().width, modified.size().height) * 0.10 ).toInt()
+        val groupSimilarThreshold = houghThreshold / 2
+        val angleThreshold = PI / 4.0
 
         // OpenCV Hough Line Transform Tutorial https://docs.opencv.org/3.4/d9/db0/tutorial_hough_lines.html
-        Imgproc.HoughLines(cannyImg, lines, 1.0, Math.PI / 180.0, houghThreshold)
+        Imgproc.HoughLines(cannyImg, lines, 1.0, Math.PI / 90.0, houghThreshold)
 
         val imgSize = cannyImg.size()
         val xMax = imgSize.width - 1
         val yMax = imgSize.height - 1
         val uniqueLines = groupSimilarLines(lines, groupSimilarThreshold, xMax, yMax)
         val intersectionPoints = findIntersections(uniqueLines, xMax, yMax, angleThreshold)
-        return buildQuadrilateralsAndFindBest(intersectionPoints, minLineLength = 75, minAngle = PI * 0.25, maxAngle = PI, cannyImg)
+
+        return buildQuadrilateralsAndFindBest(intersectionPoints, minLineLength = houghThreshold, minAngle = angleThreshold, maxAngle = PI, cannyImg)
 //        return Lines(uniqueLines, imgSize, intersectionPoints)
     }
 
@@ -93,7 +95,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
         return intersections
     }
 
-    private fun buildQuadrilateralsAndFindBest(intersections: Set<LinesIntersection>, minLineLength: Int, minAngle: Double, maxAngle: Double, cannyImg: Mat): Corners? {
+     private fun buildQuadrilateralsAndFindBest(intersections: Set<LinesIntersection>, minLineLength: Int, minAngle: Double, maxAngle: Double, cannyImg: Mat): Corners? {
         val intersectionsList = intersections.toList()
         var weights = Array(intersectionsList.size) { DoubleArray(intersectionsList.size) }
         var maxScore = 0.0
@@ -105,10 +107,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
                 val v1v2Line = commonLine(v1, v2)
                 if (v1v2Line != null && v1.dist(v2) > minLineLength) {
                     if (weights[i1][i2] == 0.0) {
-                        var weight = countOnPixels(v1, v2, v1v2Line, cannyImg).toDouble()
-                        if (weight == 0.0) {
-                            weight = 0.000001
-                        }
+                        var weight = max(countOnPixels(v1, v2, v1v2Line, cannyImg).toDouble(), 0.000001)
                         weights[i1][i2] = weight
                         weights[i2][i1] = weight
                     }
