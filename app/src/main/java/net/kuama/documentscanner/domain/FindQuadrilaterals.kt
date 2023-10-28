@@ -6,6 +6,7 @@ import net.kuama.documentscanner.data.Line
 import net.kuama.documentscanner.data.LinesIntersection
 import net.kuama.documentscanner.data.angle
 import net.kuama.documentscanner.data.countOnPixels
+import net.kuama.documentscanner.data.withinBounds
 import net.kuama.documentscanner.support.InfallibleUseCase
 import org.opencv.android.Utils
 import org.opencv.core.Mat
@@ -49,7 +50,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
         val xMax = imgSize.width - 1
         val yMax = imgSize.height - 1
         val uniqueLines = groupSimilarLines(lines, groupSimilarThreshold, xMax, yMax)
-        val intersectionPoints = findIntersections(uniqueLines, xMax, yMax, angleThreshold)
+        val intersectionPoints = findIntersections(uniqueLines, angleThreshold, imgSize)
 
         return buildQuadrilateralsAndFindBest(intersectionPoints, minLineLength = houghThreshold, minAngle = angleThreshold, maxAngle = PI, cannyImg)
 //        return Lines(uniqueLines, imgSize, intersectionPoints)
@@ -77,7 +78,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
         return uniqueLines
     }
 
-    private fun findIntersections(lines: List<Line>, xMax: Double, yMax: Double, angleThreshold: Double): Set<LinesIntersection> {
+    private fun findIntersections(lines: List<Line>, angleThreshold: Double, size: Size): Set<LinesIntersection> {
         val intersections = mutableSetOf<LinesIntersection>()
         for (i in lines.indices) {
             val line1 = lines[i]
@@ -87,7 +88,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
                     continue
                 }
                 val p = line1.findIntersectionCords(line2)
-                if (p.x in 0.0..xMax && p.y in 0.0..yMax) {
+                if (withinBounds(p, size)) {
                     intersections.add(LinesIntersection(line1, line2, p));
                 }
             }
