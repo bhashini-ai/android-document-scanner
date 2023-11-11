@@ -9,6 +9,6 @@ fun Context.outputDirectory() =
         mkdirs()
     }
 
-fun Context.toast(message:String){
-    Toast.makeText(this,message, Toast.LENGTH_LONG).show()
+fun Context.toast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }

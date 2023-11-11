@@ -39,7 +39,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
         Imgproc.Canny(modified, cannyImg, 100.0, 200.0, 5, false)
 
         val lines = Mat()
-        val houghThreshold = (min(modified.size().width, modified.size().height) * 0.10 ).toInt()
+        val houghThreshold = (min(modified.size().width, modified.size().height) * 0.10).toInt()
         val groupSimilarThreshold = houghThreshold / 2
         val angleThreshold = PI / 4.0
 
@@ -89,19 +89,19 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
                 }
                 val p = line1.findIntersectionCords(line2)
                 if (withinBounds(p, size)) {
-                    intersections.add(LinesIntersection(line1, line2, p));
+                    intersections.add(LinesIntersection(line1, line2, p))
                 }
             }
         }
         return intersections
     }
 
-     private fun buildQuadrilateralsAndFindBest(intersections: Set<LinesIntersection>, minLineLength: Int, minAngle: Double, maxAngle: Double, cannyImg: Mat): Corners? {
+    private fun buildQuadrilateralsAndFindBest(intersections: Set<LinesIntersection>, minLineLength: Int, minAngle: Double, maxAngle: Double, cannyImg: Mat): Corners? {
         val intersectionsList = intersections.toList()
         var weights = Array(intersectionsList.size) { DoubleArray(intersectionsList.size) }
         var maxScore = 0.0
         var bestQuadrilateral: List<LinesIntersection>? = null
-        for (i1 in 0 until intersectionsList.size) {
+        for (i1 in intersectionsList.indices) {
             val v1 = intersectionsList[i1]
             for (i2 in i1 + 1 until intersectionsList.size) {
                 val v2 = intersectionsList[i2]
@@ -117,7 +117,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
                         val v2v3Line = commonLine(v2, v3)
                         if (v2v3Line != null && v2.dist(v3) > minLineLength) {
                             val angle123 = angle(v1v2Line, v2v3Line)
-                            if (angle123 !in minAngle..maxAngle) continue;
+                            if (angle123 !in minAngle..maxAngle) continue
                             for (i4 in i1 + 1 until intersectionsList.size) {
                                 val v4 = intersectionsList[i4]
                                 val v3v4Line = commonLine(v3, v4)
@@ -142,7 +142,7 @@ class FindQuadrilaterals : InfallibleUseCase<Corners?, FindQuadrilaterals.Params
             }
         }
         if (bestQuadrilateral != null) {
-            val sortedPoints = bestQuadrilateral!!.sortedBy { it.point.x }
+            val sortedPoints = bestQuadrilateral.sortedBy { it.point.x }
             val leftSidePoints = listOf(sortedPoints[0], sortedPoints[1]).sortedBy { it.point.y }
             val rightSidePoints = listOf(sortedPoints[2], sortedPoints[3]).sortedBy { it.point.y }
             val topLeft = leftSidePoints[0]

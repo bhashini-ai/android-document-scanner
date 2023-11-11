@@ -22,12 +22,12 @@ class PaperRectangle : View {
     constructor(context: Context, attributes: AttributeSet, defTheme: Int) : super(context, attributes, defTheme)
 
     // Paint objects for drawing the shapes and lines
-    private val rectPaint = Paint()        // Paint for drawing the rectangle lines
-    private val extCirclePaint = Paint()   // Paint for external circles
-    private val intCirclePaint = Paint()   // Paint for internal circles
-    private val intCirclePaintR = Paint()  // Paint for internal circles (red)
-    private val extCirclePaintR = Paint()  // Paint for external circles (red)
-    private val fillPaint = Paint()       // Paint for filling the rectangle shape
+    private val rectPaint = Paint() // Paint for drawing the rectangle lines
+    private val extCirclePaint = Paint() // Paint for external circles
+    private val intCirclePaint = Paint() // Paint for internal circles
+    private val intCirclePaintR = Paint() // Paint for internal circles (red)
+    private val extCirclePaintR = Paint() // Paint for external circles (red)
+    private val fillPaint = Paint() // Paint for filling the rectangle shape
 
     // Ratios for resizing the points to fit the view's dimensions
     private var ratioX: Double = 1.0
@@ -237,7 +237,7 @@ class PaperRectangle : View {
     }
 
     /** Update the path with the new corner points */
-     fun updateRect() {
+    fun updateRect() {
         path.moveTo(topLeft.x.toFloat(), topLeft.y.toFloat())
         path.lineTo(topRight.x.toFloat(), topRight.y.toFloat())
         path.lineTo(bottomRight.x.toFloat(), bottomRight.y.toFloat())

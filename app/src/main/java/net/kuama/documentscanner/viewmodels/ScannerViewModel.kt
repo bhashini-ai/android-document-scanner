@@ -216,7 +216,7 @@ class ScannerViewModel : ViewModel() {
         lines.value = null
     }
 
-    fun clearFlashStatus(){
+    fun clearFlashStatus() {
         flashStatus.value = EFlashStatus.OFF
     }
 

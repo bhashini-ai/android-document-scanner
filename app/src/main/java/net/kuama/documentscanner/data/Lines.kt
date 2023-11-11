@@ -22,7 +22,7 @@ data class LinesIntersection(
     val line2: Line,
     val point: Point
 ) {
-    fun dist(i2: LinesIntersection) : Double = dist(point, i2.point)
+    fun dist(i2: LinesIntersection): Double = dist(point, i2.point)
 }
 
 data class Line(
@@ -104,7 +104,7 @@ fun withinBounds(x: Int, y: Int, size: Size) = x in 0 until size.width.toInt() &
 
 fun withinBounds(p: Point, size: Size) = withinBounds(p.x.toInt(), p.y.toInt(), size)
 
-fun dist(p1: Point, p2: Point) = sqrt((p2.x - p1.x).pow(2) + (p2.y - p1.y).pow(2) )
+fun dist(p1: Point, p2: Point) = sqrt((p2.x - p1.x).pow(2) + (p2.y - p1.y).pow(2))
 
 fun angle(line1: Line, line2: Line) = abs(line1.theta - line2.theta)
 
